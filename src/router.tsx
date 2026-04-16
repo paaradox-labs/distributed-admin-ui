@@ -3,27 +3,34 @@ import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/login/login";
 import Dashboard from "./layouts/Dashboard";
 import NonAuth from "./layouts/NonAuth";
+import Root from "./layouts/Root";
 
 export const router = createBrowserRouter([
-  // Authenticated Routes
   {
     path: "/",
-    element: <Dashboard />,
+    element: <Root />,
     children: [
       {
         path: "",
-        element: <HomePage />,
+        element: <Dashboard />,
+        children: [
+          // Authenticated Routes
+          {
+            path: "",
+            element: <HomePage />,
+          },
+        ],
       },
-    ],
-  },
-  // Not Authenticated
-  {
-    path: "/auth",
-    element: <NonAuth />,
-    children: [
+      // Not Authenticated
       {
-        path: "login",
-        element: <LoginPage />,
+        path: "/auth",
+        element: <NonAuth />,
+        children: [
+          {
+            path: "login",
+            element: <LoginPage />,
+          },
+        ],
       },
     ],
   },
