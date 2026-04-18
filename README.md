@@ -2,11 +2,26 @@
 
 A modern, responsive admin dashboard built with React and TypeScript. This project serves as the frontend interface for managing various administrative tasks with a clean and intuitive user experience.
 
-## Overview
+## 📋 Table of Contents
+
+- [Overview](#overview)
+- [Tech Stack](#tech-stack)
+- [Features](#features)
+- [Project Structure](#project-structure)
+- [Routes](#routes)
+- [Available Commands](#available-commands)
+- [Getting Started](#getting-started)
+- [Development Guidelines](#development-guidelines)
+- [Environment Variables](#environment-variables)
+- [Testing](#testing)
+- [Contributing](#contributing)
+- [License](#license)
+
+## 🎯 Overview
 
 This is an early-stage React application that provides the foundation for a comprehensive admin dashboard. It includes authentication pages, routing configuration, and core page layouts ready for further development.
 
-## Tech Stack
+## 🛠️ Tech Stack
 
 | Technology | Version | Purpose |
 |------------|---------|---------|
@@ -16,16 +31,21 @@ This is an early-stage React application that provides the foundation for a comp
 | React Router | 7.14.0 | Client-side Routing |
 | Vitest | 4.1.4 | Testing Framework |
 | ESLint | 9.39.4 | Code Linting |
+| React Testing Library | - | Testing Utilities |
 
-## Features
+## ✨ Features
 
 - **Client-side Routing** - Seamless navigation between pages using React Router
 - **Component-based Architecture** - Modular and reusable React components
 - **TypeScript Support** - Full type safety across the codebase
 - **Testing Ready** - Vitest configured with React Testing Library
 - **Code Quality** - ESLint configured for consistent code style
+- **Responsive Design** - Works on desktop and mobile devices
+- **Authentication Flow** - Login page with form validation
+- **Dashboard Views** - Home page and category management interface
+- **Environment Configuration** - Support for different environments via .env files
 
-## Project Structure
+## 📁 Project Structure
 
 ```
 admin-dashboard/
@@ -44,10 +64,13 @@ admin-dashboard/
 ├── package.json               # Project dependencies and scripts
 ├── tsconfig.json              # TypeScript configuration
 ├── vite.config.ts             # Vite build configuration
-└── eslint.config.js           # ESLint configuration
+├── eslint.config.js           # ESLint configuration
+├── .env                       # Environment variables
+├── .env.example               # Example environment variables
+└── README.md
 ```
 
-## Routes
+## 🛣️ Routes
 
 | Path | Component | Description |
 |------|-----------|-------------|
@@ -55,7 +78,7 @@ admin-dashboard/
 | `/categories` | Categories | Category management interface |
 | `/auth/login` | LoginPage | User authentication page |
 
-## Available Commands
+## 🔧 Available Commands
 
 ```bash
 # Install dependencies
@@ -75,9 +98,12 @@ pnpm preview
 
 # Run tests in watch mode for development
 pnpm test
+
+# Run tests with coverage
+pnpm test --coverage
 ```
 
-## Getting Started
+## 🚀 Getting Started
 
 ### Prerequisites
 
@@ -91,25 +117,68 @@ pnpm test
    ```bash
    pnpm install
    ```
-3. Start the development server:
+3. Create a `.env` file based on `.env.example`:
+   ```bash
+   cp .env.example .env
+   ```
+4. Start the development server:
    ```bash
    pnpm dev
    ```
-4. Open your browser and navigate to `http://localhost:5173`
+5. Open your browser and navigate to `http://localhost:5173`
 
-## Development Guidelines
+## 📝 Development Guidelines
 
 - Use functional components with hooks
 - Follow TypeScript best practices
 - Write tests for new components
 - Run `pnpm lint` before committing
+- Keep components small and focused
+- Use meaningful variable and function names
+- Follow the existing code style in the project
 
-## Contributing
+## 🔐 Environment Variables
+
+The project uses environment variables for configuration. Copy `.env.example` to `.env` and update as needed:
+
+```
+# VITE_API_URL - Base URL for API endpoints
+VITE_API_URL=http://localhost:3000/api
+
+# Add other environment variables as needed
+```
+
+> **Note**: Environment variables must be prefixed with `VITE_` to be exposed to the Vite-built application.
+
+## 🧪 Testing
+
+This project uses Vitest for testing with React Testing Library.
+
+```bash
+# Run tests in watch mode
+pnpm test
+
+# Run tests once and exit
+pnpm test --run
+
+# Run tests with coverage report
+pnpm test --coverage
+```
+
+## 🤝 Contributing
 
 Feel free to contribute to this project by submitting pull requests or opening issues for bugs and feature requests.
 
-## License
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📄 License
 
 This project is private and for internal use only.
 
 ---
+
+*Last updated: April 2026*
