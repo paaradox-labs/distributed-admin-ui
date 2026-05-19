@@ -1,14 +1,15 @@
 # Admin Dashboard
 
-A modern, responsive admin dashboard built with React and TypeScript. This project serves as the frontend interface for managing various administrative tasks with a clean and intuitive user experience.
+A modern, responsive admin dashboard built with React and TypeScript. This project serves as the frontend interface for managing various administrative tasks with a clean and intuitive user experience. Authentication is handled via HTTP-only cookies with automatic token refresh.
 
-## 📋 Table of Contents
+## Table of Contents
 
 - [Overview](#overview)
 - [Tech Stack](#tech-stack)
 - [Features](#features)
 - [Project Structure](#project-structure)
 - [Routes](#routes)
+- [Authentication Flow](#authentication-flow)
 - [Available Commands](#available-commands)
 - [Getting Started](#getting-started)
 - [Development Guidelines](#development-guidelines)
@@ -17,68 +18,127 @@ A modern, responsive admin dashboard built with React and TypeScript. This proje
 - [Contributing](#contributing)
 - [License](#license)
 
-## 🎯 Overview
+## Overview
 
-This is an early-stage React application that provides the foundation for a comprehensive admin dashboard. It includes authentication pages, routing configuration, and core page layouts ready for further development.
+This is an early-stage React application that provides the foundation for a comprehensive admin dashboard. It includes authentication with HTTP-only cookies, role-based access control (admin/manager only), automatic token refresh, protected routing, and a scalable architecture with Ant Design UI components.
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 | Technology | Version | Purpose |
 |------------|---------|---------|
-| React | 19.2.4 | UI Framework |
-| Vite | 8.0.4 | Build Tool |
-| TypeScript | ~6.0 | Type Safety |
-| React Router | 7.14.0 | Client-side Routing |
-| Vitest | 4.1.4 | Testing Framework |
-| ESLint | 9.39.4 | Code Linting |
-| React Testing Library | - | Testing Utilities |
+| React | ^19.2.4 | UI Framework |
+| Vite | ^8.0.4 | Build Tool |
+| TypeScript | ~6.0.2 | Type Safety |
+| React Router | ^7.14.0 | Client-side Routing |
+| Ant Design | ^6.3.5 | UI Component Library |
+| Axios | ^1.15.0 | HTTP Client |
+| TanStack Query | ^5.99.0 | Server State Management |
+| Zustand | ^5.0.12 | Client State Management |
+| Vitest | ^4.1.4 | Testing Framework |
+| ESLint | ^9.39.4 | Code Linting |
 
-## ✨ Features
+## Features
 
-- **Client-side Routing** - Seamless navigation between pages using React Router
+- **HTTP-Only Cookie Auth** - Secure authentication without client-side token storage
+- **Automatic Token Refresh** - Axios interceptor silently refreshes expired tokens
+- **Role-Based Access Control** - Only `admin` and `manager` roles are authorized
+- **Protected Routes** - Authenticated layouts redirect unauthorized users to login
+- **Persistent Sessions** - User session restored on page refresh via self endpoint
+- **Ant Design UI** - Production-ready component library with consistent design
+- **Client-side Routing** - Seamless navigation using React Router v7
+- **Server State Management** - TanStack Query for API data fetching and mutations
 - **Component-based Architecture** - Modular and reusable React components
 - **TypeScript Support** - Full type safety across the codebase
 - **Testing Ready** - Vitest configured with React Testing Library
 - **Code Quality** - ESLint configured for consistent code style
-- **Responsive Design** - Works on desktop and mobile devices
-- **Authentication Flow** - Login page with form validation
-- **Dashboard Views** - Home page and category management interface
-- **Environment Configuration** - Support for different environments via .env files
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 admin-dashboard/
 ├── src/
+│   ├── components/
+│   │   └── icons/
+│   │       └── Logo.tsx              # Inline SVG logo component
+│   ├── hooks/
+│   │   └── usePermission.ts          # Role-based permission hook
+│   ├── http/
+│   │   ├── api.ts                    # API endpoint functions (login, self, logout)
+│   │   └── client.ts                 # Axios instance with token refresh interceptor
+│   ├── layouts/
+│   │   ├── Dashboard.tsx             # Authenticated layout (protected route wrapper)
+│   │   ├── NonAuth.tsx               # Non-authenticated layout (redirects if logged in)
+│   │   └── Root.tsx                  # Root layout; fetches current user on mount
 │   ├── pages/
-│   │   ├── HomePage.tsx        # Main dashboard/home page
-│   │   ├── Categories.tsx      # Categories management page
-│   │   └── login/
-│   │       ├── login.tsx       # Login page component
-│   │       └── login.spec.tsx  # Login page unit tests
-│   ├── router.tsx             # Application routing configuration
-│   ├── main.tsx               # Application entry point
-│   └── index.css              # Global styles and base theming
-├── public/                    # Static assets
-├── index.html                 # HTML entry point
-├── package.json               # Project dependencies and scripts
-├── tsconfig.json              # TypeScript configuration
-├── vite.config.ts             # Vite build configuration
-├── eslint.config.js           # ESLint configuration
-├── .env                       # Environment variables
-├── .env.example               # Example environment variables
+│   │   ├── login/
+│   │   │   ├── login.tsx             # Login page with Ant Design form
+│   │   │   └── login.spec.tsx        # Login page unit tests
+│   │   └── HomePage.tsx              # Main dashboard/home page (placeholder)
+│   ├── types/
+│   │   └── types.ts                  # TypeScript type definitions
+│   ├── index.css                     # Global styles
+│   ├── main.tsx                      # Application entry point with providers
+│   ├── router.tsx                    # Application routing configuration
+│   └── store.ts                      # Zustand auth store (user state, login/logout)
+├── public/                           # Static assets
+├── index.html                        # HTML entry point
+├── package.json                      # Project dependencies and scripts
+├── tsconfig.json                     # TypeScript configuration
+├── vite.config.ts                    # Vite build configuration
+├── eslint.config.js                  # ESLint configuration
+├── .env                              # Environment variables (local)
+├── .env.example                      # Example environment variables
 └── README.md
 ```
 
-## 🛣️ Routes
+## Routes
 
-| Path | Component | Description |
-|------|-----------|-------------|
-| `/` | HomePage | Main dashboard view |
-| `/categories` | Categories | Category management interface |
-| `/auth/login` | LoginPage | User authentication page |
+| Path | Layout | Component | Auth Required | Description |
+|------|--------|-----------|---------------|-------------|
+| `/` | Root > Dashboard | HomePage | Yes | Main dashboard view |
+| `/auth/login` | Root > NonAuth | LoginPage | No | User authentication page |
 
-## 🔧 Available Commands
+### Route Hierarchy
+
+```
+<Root>                                    # Fetches self (current user) on mount
+  <Dashboard />                           # Redirects to /auth/login if user === null
+    <HomePage />                          # At path "/"
+  <NonAuth />                             # Redirects to "/" if user !== null
+    <LoginPage />                         # At path "/auth/login"
+```
+
+## Authentication Flow
+
+### Mechanism
+
+The app uses HTTP-only cookies for authentication. There is no JWT token storage in the frontend — the backend sets cookies that are automatically sent with requests.
+
+### Login Flow
+
+1. User navigates to `/auth/login`
+2. `NonAuth` layout checks if `user !== null` — if authenticated, redirects to `/`
+3. User submits email + password via the Ant Design form
+4. `POST /auth/login` is called via TanStack Query mutation
+5. On success, `GET /auth/self` fetches the user profile
+6. Permission check: Only `admin` or `manager` roles are allowed
+7. If unauthorized, `POST /auth/logout` is called and the store is cleared
+8. If authorized, user data is saved to the Zustand store and the dashboard is rendered
+
+### Token Refresh
+
+1. Any Axios request returns a 401 response
+2. The response interceptor catches it and calls `POST /auth/refresh`
+3. If refresh succeeds, the original request is retried
+4. If refresh fails, the user is logged out (store cleared)
+
+### Session Restore (Page Refresh)
+
+1. On navigation, `Root` layout runs `GET /auth/self`
+2. If the cookie is still valid, user data is restored to the store
+3. If the backend returns 401, user stays logged out and is redirected to login
+
+## Available Commands
 
 ```bash
 # Install dependencies
@@ -96,18 +156,21 @@ pnpm lint
 # Preview production build locally
 pnpm preview
 
-# Run tests in watch mode for development
+# Run tests in watch mode
 pnpm test
+
+# Run tests once and exit
+pnpm test --run
 
 # Run tests with coverage
 pnpm test --coverage
 ```
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 
-- Node.js 18+ 
+- Node.js 18+
 - pnpm (recommended) or npm
 
 ### Installation
@@ -127,7 +190,7 @@ pnpm test --coverage
    ```
 5. Open your browser and navigate to `http://localhost:5173`
 
-## 📝 Development Guidelines
+## Development Guidelines
 
 - Use functional components with hooks
 - Follow TypeScript best practices
@@ -137,20 +200,20 @@ pnpm test --coverage
 - Use meaningful variable and function names
 - Follow the existing code style in the project
 
-## 🔐 Environment Variables
+## Environment Variables
 
 The project uses environment variables for configuration. Copy `.env.example` to `.env` and update as needed:
 
 ```
-# VITE_API_URL - Base URL for API endpoints
-VITE_API_URL=http://localhost:3000/api
+# VITE_BACKEND_API_URL - Base URL for backend API endpoints
+VITE_BACKEND_API_URL=http://localhost:5501
 
 # Add other environment variables as needed
 ```
 
 > **Note**: Environment variables must be prefixed with `VITE_` to be exposed to the Vite-built application.
 
-## 🧪 Testing
+## Testing
 
 This project uses Vitest for testing with React Testing Library.
 
@@ -165,7 +228,7 @@ pnpm test --run
 pnpm test --coverage
 ```
 
-## 🤝 Contributing
+## Contributing
 
 Feel free to contribute to this project by submitting pull requests or opening issues for bugs and feature requests.
 
@@ -175,10 +238,10 @@ Feel free to contribute to this project by submitting pull requests or opening i
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-## 📄 License
+## License
 
 This project is private and for internal use only.
 
 ---
 
-*Last updated: April 2026*
+*Last updated: May 2026*
