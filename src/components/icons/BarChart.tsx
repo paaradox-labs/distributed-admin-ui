@@ -1,4 +1,4 @@
-export const BarChartIcon = () => (
+const BarChartIcon = () => (
     <svg
         width="22"
         height="22"
@@ -18,3 +18,5 @@ export const BarChartIcon = () => (
         </defs>
     </svg>
 );
+
+export default BarChartIcon
