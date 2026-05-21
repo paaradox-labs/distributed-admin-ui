@@ -5,6 +5,7 @@ import { getUsers } from "../../http/api"
 import { Breadcrumb, Space, Table } from "antd"
 import type { User } from "../../types/types"
 import { useAuthStore } from "../../store"
+import UsersFilter from "./UsersFilter"
 
 const columns = [
   {
@@ -50,7 +51,8 @@ const Users = () => {
     return <Navigate to={`/`} replace={true} />
   }
 
-  return <>
+  return (
+  <>
   <Space
   orientation="vertical"
   style={{width: "100%"}}
@@ -76,9 +78,11 @@ const Users = () => {
         {error.message}
       </div>
     }
+    <UsersFilter />
     <Table columns={columns} dataSource={users} />
   </Space>
   </>
+  )
 }
 
 export default Users
