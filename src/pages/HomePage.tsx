@@ -4,7 +4,7 @@ import { useAuthStore } from "../store";
 import type { ComponentType } from "react";
 import { Button, Card, Col, List, Row, Skeleton, Space, Statistic, Tag } from "antd";
 import Icon from "@ant-design/icons";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import BasketIcon from "../components/icons/BasketIcon";
 import BarChartIcon from "../components/icons/BarChart";
 
@@ -72,9 +72,13 @@ function HomePage() {
 
   const { user } = useAuthStore();
 
+  if(user === null){
+     return <Navigate to={`/auth/login`} replace={true} />;
+  }
+    
   return (
      <div>
-            <Title level={4}>Welcome, {user?.firstName} 😀</Title>
+            <Title level={4}>Welcome, {user.firstName} {user.lastName} 😀</Title>
             <Row className="mt-4" gutter={16}>
                 <Col span={12}>
                     <Row gutter={[16, 16]}>

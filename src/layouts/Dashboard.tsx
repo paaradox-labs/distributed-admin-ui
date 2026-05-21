@@ -14,16 +14,12 @@ import UserIcon from "../components/icons/UserIcon";
 import { useMutation } from "@tanstack/react-query";
 import { logout } from "../http/api";
 
-const items = [
+const getMenuItems = (role: string) => {
+  const baseItems = [
   {
     key: "/",
     icon: <Icon component={Home} />,
-    label: <NavLink to={`/`} >Home</NavLink>
-  },
-  {
-    key: "/user",
-    icon: <Icon component={UserIcon} />,
-    label: <NavLink to={`/users`}>Users</NavLink>
+    label: <NavLink to={`/`} >Home</NavLink>, 
   },
   {
         key: '/restaurants',
@@ -40,13 +36,23 @@ const items = [
         icon: <Icon component={GiftIcon} />,
         label: <NavLink to="/promos">Promos</NavLink>,
     },
-]
+  ];
 
-
+  if(role === "admin"){
+    const menus =  [...baseItems];
+    menus.splice(1,0,{
+      key: "/users",
+      icon: <Icon component={UserIcon} />,
+      label: <NavLink to={"/users"}>Users</NavLink>
+    })
+  return menus;
+  }
+  return baseItems;
+}
 
 const Dashboard = () => {
 
-  const { logout: logoutFromStore  } = useAuthStore()
+  const {logout: logoutFromStore  } = useAuthStore()
 
     const { mutate: logoutMutate } = useMutation({
     mutationKey: ["logout"],
@@ -62,10 +68,13 @@ const Dashboard = () => {
     token: { colorBgContainer },
   } = theme.useToken();
 
-  const { user } = useAuthStore();
+  const { user } = useAuthStore()
   if (user === null) {
     return <Navigate to={`/auth/login`} replace={true} />;
   }
+  
+  const items = getMenuItems(user.role)
+
   return (
     <div>
       <Layout style={{ minHeight: '100vh', background: colorBgContainer }}>
