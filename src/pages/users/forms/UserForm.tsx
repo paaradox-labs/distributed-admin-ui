@@ -118,15 +118,23 @@ const UserForm = () => {
                 ]}
                 >  
                         <Select
-                        size="large"
-                        style={{width: "100%"}}
-                        allowClear={true}
-                        onChange={() => {}}
-                        placeholder={`Select role`}
-                        options={tenants?.map((tenant: Tenant) => ({
-                            value: tenant.id,
-                            label: tenant.name
-                        }))}
+                        id="selectBoxInUserForm"
+                                        size="large"
+                                        style={{ width: '100%' }}
+                                        allowClear={true}
+                                        onChange={() => {}}
+                                        placeholder="Select role"
+                                        options={[
+                                            {
+                                                value: "admin",
+                                                label: "Admin"
+                                            },
+                                            {
+                                                value: "manager",
+                                                label: "Manager"
+                                            }
+                                        ]}
+                        
                         />
                     </Form.Item>
                 </Col>

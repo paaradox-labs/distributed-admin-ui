@@ -78,7 +78,7 @@ function HomePage() {
     
   return (
      <div>
-            <Title level={4}>Welcome, {user.firstName} {user.lastName} 😀</Title>
+            <Title level={4}>Welcome, {user.firstName} 😀</Title>
             <Row className="mt-4" gutter={16}>
                 <Col span={12}>
                     <Row gutter={[16, 16]}>
