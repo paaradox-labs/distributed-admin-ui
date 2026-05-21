@@ -1,9 +1,9 @@
 import { PlusOutlined, RightOutlined } from "@ant-design/icons"
-import { useQuery } from "@tanstack/react-query"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { Link, Navigate } from "react-router-dom"
-import { getUsers } from "../../http/api"
+import { createUser, getUsers } from "../../http/api"
 import { Breadcrumb, Button, Drawer, Form, Space, Table, theme } from "antd"
-import type { User } from "../../types/types"
+import type { CreateUserData, User } from "../../types/types"
 import { useAuthStore } from "../../store"
 import UsersFilter from "./UsersFilter"
 import { useState } from "react"
@@ -40,6 +40,10 @@ const columns = [
 
 const Users = () => {
 
+  const [form] = Form.useForm()
+
+  const queryClient = useQueryClient()
+
   const { token: {colorBgLayout} } = theme.useToken()
 
   const [drawerOpen, setDrawerOper] = useState(false)
@@ -52,6 +56,24 @@ const Users = () => {
   })
 
   const { user } = useAuthStore()
+
+  const {mutate: userMutate} = useMutation({
+    mutationKey: ["user"],
+    mutationFn: async(data: CreateUserData) => createUser(data).then((res) => res.data),
+    onSuccess: async () => {
+      queryClient.invalidateQueries({
+        queryKey: ["users"]
+      })
+      return;
+    }
+  })
+
+  const onHandleSubmit = async () => {
+    await form.validateFields()
+    await userMutate(form.getFieldsValue())
+    form.resetFields()
+    setDrawerOper(false)
+  }
 
   if(user?.role !== "admin"){
     return <Navigate to={`/`} replace={true} />
@@ -106,13 +128,22 @@ const Users = () => {
     destroyOnHidden={true}
     onClick={() => {console.log("Closing")}}
     open={drawerOpen}
-    onClose={()=>{setDrawerOper(false)}}
+    onClose={()=>{
+      form.resetFields()
+      setDrawerOper(false)
+    }}
     extra={
       <Space>
-        <Button>
+        <Button
+        onClick={() => {
+          form.resetFields()
+          setDrawerOper(false)
+        }}
+        >
           Cancel
         </Button>
         <Button
+        onClick={onHandleSubmit}
         type="primary"
         >
           Submit
@@ -122,6 +153,7 @@ const Users = () => {
     >
      <Form
      layout="vertical"
+     form={form}
      >
       <UserForm />
      </Form>
