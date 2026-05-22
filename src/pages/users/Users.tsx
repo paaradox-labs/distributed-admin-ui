@@ -35,6 +35,15 @@ const columns = [
     title: "Role",
     dataIndex: "role",
     key: "role" 
+  },{
+    title: "Restaurant Name",
+    dataIndex: "tenant",
+    key: "tenant",
+    render: (_text: string, record: User) => {
+      return <span>
+        {record?.tenant?.name || "-"} 
+      </span>
+    }
   }
 ]
 
