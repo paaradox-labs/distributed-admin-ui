@@ -1,8 +1,8 @@
-import { PlusOutlined, RightOutlined } from "@ant-design/icons"
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { LoadingOutlined, PlusOutlined, RightOutlined } from "@ant-design/icons"
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { Link, Navigate } from "react-router-dom"
 import { createUser, getUsers } from "../../http/api"
-import { Breadcrumb, Button, Drawer, Form, Space, Table, theme } from "antd"
+import { Breadcrumb, Button, Drawer, Flex, Form, Space, Spin, Table, theme, Typography } from "antd"
 import type { CreateUserData, User } from "../../types/types"
 import { useAuthStore } from "../../store"
 import UsersFilter from "./UsersFilter"
@@ -63,12 +63,13 @@ const Users = () => {
 
   const [drawerOpen, setDrawerOper] = useState(false)
 
-  const { data: users, isLoading, isError, error } = useQuery({
+  const { data: users, isFetching, isError, error } = useQuery({
     queryKey: ["users", queryParams],
     queryFn: () =>  {
       const queryString = new URLSearchParams(queryParams as unknown as Record<string, string>).toString()
       return getUsers(queryString).then((res) => res.data)
     },
+    placeholderData: keepPreviousData
   })
 
   const { user } = useAuthStore()
@@ -102,7 +103,11 @@ const Users = () => {
   style={{width: "100%"}}
   size={`large`}
   >
-<Breadcrumb 
+
+    <Flex
+    justify="space-between"
+    >
+      <Breadcrumb 
     separator = {<RightOutlined />}
     items={[
       {
@@ -113,15 +118,20 @@ const Users = () => {
     ]}
     />
     {
-      isLoading && <div>
-        Loading...
-      </div>
+      isFetching && ( <Spin 
+      indicator={<LoadingOutlined 
+        style={{fontSize: 24}}
+        spin
+      />}
+      /> )
     }
     {
-      isError && <div>
-        {error.message}
-      </div>
+      isError && <Typography.Text type="danger">
+        {error.message}  
+      </Typography.Text>
     }
+    </Flex>
+
     <UsersFilter
     onFilterChange={( filterName: string, filterValue: string) => {
         console.log(filterName, filterValue);
