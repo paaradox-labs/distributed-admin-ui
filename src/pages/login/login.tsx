@@ -127,6 +127,7 @@ const LoginPage = () => {
                 <Input.Password
                   prefix={<LockOutlined />}
                   placeholder="Password"
+                  autoComplete="current-password"
                 />
               </Form.Item>
               <Flex justify="space-between">
