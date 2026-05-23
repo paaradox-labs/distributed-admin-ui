@@ -1,6 +1,6 @@
-import { PlusOutlined, RightOutlined } from "@ant-design/icons"
+import { LoadingOutlined, PlusOutlined, RightOutlined } from "@ant-design/icons"
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { Breadcrumb, Button, Drawer, Form, Space, Table, theme } from "antd"
+import { Breadcrumb, Button, Drawer, Flex, Form, Space, Spin, Table, theme, Typography } from "antd"
 import { Link, Navigate } from "react-router-dom"
 import { createTenant, getTenants } from "../../http/api"
 import { useMemo, useState } from "react"
@@ -46,7 +46,7 @@ const Tenants = () => {
     const [drawerOpen, setDrawerOpen] = useState(false);
     const {
         data: tenants,
-        isLoading,
+        isFetching,
         isError,
         error
     } = useQuery({
@@ -114,6 +114,7 @@ const Tenants = () => {
     return(
         <>
             <Space orientation="vertical" size="large" style={{ width: '100%' }}>
+                <Flex>
                 <Breadcrumb
                 separator={<RightOutlined />}
                 items={[{
@@ -121,13 +122,25 @@ const Tenants = () => {
                         Dashboard
                     </Link>
                 },
-            {
+                {
                 title: "Tenants"
-            }]}
+                 }]}
                 />
-            {isLoading && <div>Loading...</div>}
-            {isError && <div>{error.message}</div>}
+            {isFetching && ( <Spin 
+            indicator={<LoadingOutlined 
+            style={{fontSize: 24}}
+            spin
+            />}
+            /> )
+            }
+            {
+            isError && <Typography.Text type="danger">
+            {error.message}  
+            </Typography.Text>
+    }
 
+                </Flex>
+                
            <Form
            form={filterForm} onFieldsChange={onFilterChange}
            >
