@@ -38,7 +38,7 @@ const columns = [
     dataIndex: "role",
     key: "role" 
   },{
-    title: "Restaurant Name",
+    title: "Restaurant",
     dataIndex: "tenant",
     key: "tenant",
     render: (_text: string, record: User) => {
