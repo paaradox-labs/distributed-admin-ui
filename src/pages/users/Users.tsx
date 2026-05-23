@@ -3,7 +3,7 @@ import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tansta
 import { Link, Navigate } from "react-router-dom"
 import { createUser, getUsers } from "../../http/api"
 import { Breadcrumb, Button, Drawer, Flex, Form, Space, Spin, Table, theme, Typography } from "antd"
-import type { CreateUserData, User } from "../../types/types"
+import type { CreateUserData, FieldData, User } from "../../types/types"
 import { useAuthStore } from "../../store"
 import UsersFilter from "./UsersFilter"
 import { useState } from "react"
@@ -52,6 +52,8 @@ const Users = () => {
 
   const [form] = Form.useForm()
 
+  const [filterForm] = Form.useForm()
+
   const queryClient = useQueryClient()
 
   const { token: {colorBgLayout} } = theme.useToken()
@@ -66,7 +68,8 @@ const Users = () => {
   const { data: users, isFetching, isError, error } = useQuery({
     queryKey: ["users", queryParams],
     queryFn: () =>  {
-      const queryString = new URLSearchParams(queryParams as unknown as Record<string, string>).toString()
+      const filteredParams = Object.fromEntries(Object.entries(queryParams).filter(item => !!item[1]))
+      const queryString = new URLSearchParams(filteredParams as unknown as Record<string, string>).toString()
       return getUsers(queryString).then((res) => res.data)
     },
     placeholderData: keepPreviousData
@@ -90,6 +93,17 @@ const Users = () => {
     await userMutate(form.getFieldsValue())
     form.resetFields()
     setDrawerOper(false)
+  }
+
+  const onFilterChange = (changedFields: FieldData[]) => {
+      // console.log(changedFields);
+      const changedFiltersFields = changedFields.map((item) => ({
+          [item.name[0]]: item.value
+      })).reduce((acc,item) => ({...acc, ...item}),{})
+      setQueryParams((prev) => ({
+        ...prev,
+        ...changedFiltersFields
+      }))
   }
 
   if(user?.role !== "admin"){
@@ -132,11 +146,8 @@ const Users = () => {
     }
     </Flex>
 
-    <UsersFilter
-    onFilterChange={( filterName: string, filterValue: string) => {
-        console.log(filterName, filterValue);
-    }}
-    >
+    <Form form={filterForm} onFieldsChange={onFilterChange}>
+      <UsersFilter>
       <Button
           type="primary"
           icon={<PlusOutlined />}
@@ -145,6 +156,8 @@ const Users = () => {
             Add User
           </Button>
     </UsersFilter>
+    </Form>
+    
     <Table 
     columns={columns} 
     dataSource={users?.data} 
