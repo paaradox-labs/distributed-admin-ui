@@ -1,23 +1,24 @@
-import { Card, Col, Input, Row, Select } from "antd"
+import { Card, Col, Form, Input, Row, Select } from "antd"
 
 type UserFilterProps = {
- onFilterChange : (filterName:string, filterValue: string) => void;
  children: React.ReactNode
 }
 
-const UsersFilter = ({onFilterChange, children}: UserFilterProps) => {
+const UsersFilter = ({children}: UserFilterProps) => {
   return (
     <Card>
       <Row justify="space-between">
         <Col span={16}>
-          <Row gutter={20} >
-            <Col  span={8} >
-                <Input.Search placeholder="Search"  allowClear={true} onChange={(e) => onFilterChange("searchFilter", e.target.value)}/>
+          <Row gutter={20}>
+            <Col span={8}>
+            <Form.Item name="q">
+                <Input.Search placeholder="Search"  allowClear={true}/>
+            </Form.Item>
             </Col>
             <Col span={8}>
+            <Form.Item name="role">
               <Select
               allowClear={true}
-              onChange={(selectedItem) => onFilterChange("roleFilter", selectedItem)}
               style={{width: "100%"}}
               placeholder="Select role"
               options={
@@ -36,8 +37,9 @@ const UsersFilter = ({onFilterChange, children}: UserFilterProps) => {
             }
               >
             </Select>
+            </Form.Item>
             </Col>
-            <Col span={8}>
+            {/* <Col span={8}>
             <Select
             allowClear={true}
             onChange={(selectedItem) => onFilterChange("statusFilter", selectedItem)}
@@ -56,7 +58,7 @@ const UsersFilter = ({onFilterChange, children}: UserFilterProps) => {
             }
               >
             </Select>
-            </Col>
+            </Col> */}
           </Row>
         </Col>
         <Col span={8}
