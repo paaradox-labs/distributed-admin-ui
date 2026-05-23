@@ -98,8 +98,8 @@ const Users = () => {
 
   const debouncedQUpdate = useMemo(() => {
     return debounce((value: string | undefined) => {
-      setQueryParams((prev) => ({...prev, q: value}))
-    }, 285)
+      setQueryParams((prev) => ({...prev, q: value, currentPage: 1}))
+    }, 500)
   },[])
 
   useEffect(() => {
@@ -118,7 +118,8 @@ const Users = () => {
       } else{
         setQueryParams((prev) => ({
         ...prev,
-        ...changedFiltersFields
+        ...changedFiltersFields,
+        currentPage: 1
       }))
       }
   }
@@ -190,6 +191,9 @@ const Users = () => {
             currentPage: page,
           }
         })
+      },
+      showTotal: (total: number, range: number[]) => {
+        return `Showing ${range[0]}-${range[1]} of ${total} items`
       }
     }}
     />
