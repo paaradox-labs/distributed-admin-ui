@@ -4,8 +4,7 @@ import { getTenants } from "../../../http/api"
 import type { Tenant } from "../../../types/types"
 
 
-const UserForm = () => {
-
+const UserForm = ({isEditMode = false}:{isEditMode: boolean}) => {
      const {
         data: tenants,
     } = useQuery({
@@ -71,12 +70,14 @@ const UserForm = () => {
                         }
                 ]}
                 >
-                <Input placeholder="example@mail.com" size="large" /> 
+                <Input placeholder="example@mail.com" size="large" autoComplete="username"/> 
                 </Form.Item>
                     </Col>
                 </Row>
             </Card>
-            <Card
+            {
+                !isEditMode && (
+                                <Card
             title="Security info"
             variant="borderless"
             >
@@ -94,11 +95,13 @@ const UserForm = () => {
                     }
                 ]}
                 >
-                    <Input placeholder="password" size="large" type={`password`} />
+                    <Input placeholder="password" size="large" type={`password`} autoComplete="new-password" />
                 </Form.Item>
                     </Col>
                 </Row>
             </Card>
+                )
+            }
             <Card
             title="Role "
             variant="borderless"
