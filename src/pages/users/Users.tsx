@@ -6,9 +6,10 @@ import { Breadcrumb, Button, Drawer, Flex, Form, Space, Spin, Table, theme, Typo
 import type { CreateUserData, FieldData, User } from "../../types/types"
 import { useAuthStore } from "../../store"
 import UsersFilter from "./UsersFilter"
-import { useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import UserForm from "./forms/UserForm"
 import { PER_PAGE } from "../../constants"
+import { debounce } from "lodash"
 
 const columns = [
   {
@@ -95,15 +96,31 @@ const Users = () => {
     setDrawerOper(false)
   }
 
+  const debouncedQUpdate = useMemo(() => {
+    return debounce((value: string | undefined) => {
+      setQueryParams((prev) => ({...prev, q: value}))
+    }, 285)
+  },[])
+
+  useEffect(() => {
+    return() => {
+      debouncedQUpdate.cancel()
+    }
+  },[debouncedQUpdate])
+
   const onFilterChange = (changedFields: FieldData[]) => {
-      // console.log(changedFields);
       const changedFiltersFields = changedFields.map((item) => ({
           [item.name[0]]: item.value
       })).reduce((acc,item) => ({...acc, ...item}),{})
-      setQueryParams((prev) => ({
+
+      if("q" in changedFiltersFields){
+          debouncedQUpdate(changedFiltersFields.q)
+      } else{
+        setQueryParams((prev) => ({
         ...prev,
         ...changedFiltersFields
       }))
+      }
   }
 
   if(user?.role !== "admin"){
