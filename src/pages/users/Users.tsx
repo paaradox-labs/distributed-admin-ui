@@ -99,7 +99,7 @@ const Users = () => {
   const debouncedQUpdate = useMemo(() => {
     return debounce((value: string | undefined) => {
       setQueryParams((prev) => ({...prev, q: value}))
-    }, 285)
+    }, 500)
   },[])
 
   useEffect(() => {
