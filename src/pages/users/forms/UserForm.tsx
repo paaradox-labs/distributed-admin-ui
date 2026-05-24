@@ -5,6 +5,8 @@ import type { Tenant } from "../../../types/types"
 
 
 const UserForm = ({isEditMode = false}:{isEditMode: boolean}) => {
+
+    const selectedRole = Form.useWatch("role")
      const {
         data: tenants,
     } = useQuery({
@@ -141,7 +143,9 @@ const UserForm = ({isEditMode = false}:{isEditMode: boolean}) => {
                         />
                     </Form.Item>
                 </Col>
-                 <Col span={12}>
+                {
+                    selectedRole === "manager" &&  (
+                         <Col span={12}>
                 <Form.Item
                 label = "Restaurant"
                 name = "tenantId"
@@ -165,6 +169,8 @@ const UserForm = ({isEditMode = false}:{isEditMode: boolean}) => {
                         />
                     </Form.Item>
                 </Col>
+                    )
+                }
                 </Row>
             </Card>
             </Space>
