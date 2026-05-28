@@ -3,9 +3,10 @@ import HomePage from "./pages/HomePage";
 import Dashboard from "./layouts/Dashboard";
 import NonAuth from "./layouts/NonAuth";
 import Root from "./layouts/Root";
-import LoginPage from "./pages/login/Login.js";
 import Users from "./pages/users/Users.js";
 import Tenants from "./pages/tenants/Tenants.js";
+import LoginPage from "./pages/login/login.js";
+import Products from "./pages/products/Products.js";
 
 export const router = createBrowserRouter([
   {
@@ -29,6 +30,10 @@ export const router = createBrowserRouter([
             path: "/restaurants",
             element: <Tenants />,
           },
+          {
+            path: "/products",
+            element: <Products />
+          }
         ],
       },
       // Not Authenticated
