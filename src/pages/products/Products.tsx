@@ -1,5 +1,5 @@
 import { LoadingOutlined, PlusOutlined, RightOutlined, } from "@ant-design/icons"
-import { Breadcrumb, Button, Flex, Form, Image, Space, Spin, Table, Tag, Typography } from "antd"
+import { Breadcrumb, Button, Drawer, Flex, Form, Image, Space, Spin, Table, Tag, theme, Typography } from "antd"
 import { Link } from "react-router-dom"
 import ProductsFilter from "./ProductsFilter"
 import { useQuery, keepPreviousData } from "@tanstack/react-query"
@@ -10,6 +10,7 @@ import type { FieldData, Product } from "../../types/types"
 import { format } from "date-fns"
 import { debounce } from "lodash"
 import { useAuthStore } from "../../store"
+import ProductForm from "./forms/ProductForm"
 
 const columns = [
   {
@@ -72,6 +73,8 @@ const columns = [
 
 const Products = () => {
 
+    const [form] = Form.useForm()
+
     const [filterForm] = Form.useForm()
     const { user } = useAuthStore()
 
@@ -115,6 +118,16 @@ const Products = () => {
       }
   }
 
+  const [drawerOpen, setDrawerOper] = useState(false)
+
+    const { token: {colorBgLayout} } = theme.useToken()
+
+    const onHandleSubmit = () => {
+      console.log("submitting..");
+      setDrawerOper(false)
+    }
+
+
   return (
     <>
     <Space
@@ -154,7 +167,7 @@ const Products = () => {
       <Button
           type="primary"
           icon={<PlusOutlined />}
-          onClick={() => {}}
+          onClick={() => setDrawerOper(true)}
           >
             Add Products 
           </Button>
@@ -197,6 +210,43 @@ const Products = () => {
       }
     }}
     />
+      <Drawer
+    title= {"Add Product"}
+    styles={{body: {background: colorBgLayout}}}
+    size={720} 
+    destroyOnHidden={true}
+    onClick={() => {console.log("Closing")}}
+    open={drawerOpen}
+    onClose={()=>{
+      form.resetFields()
+      setDrawerOper(false)
+    }}
+    extra={
+      <Space>
+        <Button
+        onClick={() => {
+          form.resetFields()
+          setDrawerOper(false)
+        }}
+        >
+          Cancel
+        </Button>
+        <Button
+        onClick={onHandleSubmit}
+        type="primary"
+        >
+          Submit
+        </Button>
+      </Space>
+    }
+    >
+     <Form
+     layout="vertical"
+     form={form}
+     >
+      <ProductForm />
+     </Form>
+    </Drawer>
     </Space>
     </>
   )
