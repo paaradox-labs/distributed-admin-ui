@@ -1,4 +1,7 @@
+import { useQuery } from "@tanstack/react-query"
 import { Card, Col, Form, Input, Row, Select, Space, Switch, Typography } from "antd"
+import { getCategories, getTenants } from "../../http/api"
+import type { Category, Tenant } from "../../types/types"
 
 
 type ProductsFilterProps = {
@@ -6,6 +9,21 @@ type ProductsFilterProps = {
 }
 
 const ProductsFilter = ({children}: ProductsFilterProps) => {
+
+  const {data: restaurants} = useQuery({
+    queryFn: () => {
+      return getTenants(`perPage=100&currentPage=1`)
+    },
+    queryKey: ["restaurants"],
+  })
+
+  const {data: categories} = useQuery({
+    queryFn: () => {
+      return getCategories()
+    },
+    queryKey: ["categories"], 
+  })
+
   return <Card>
     <Row justify={"space-between"}>
         <Col span={16}>
@@ -16,45 +34,29 @@ const ProductsFilter = ({children}: ProductsFilterProps) => {
             </Form.Item>
             </Col>
             <Col span={6}>
-            <Form.Item name="role">
-              <Select
+            <Form.Item name="category">
+              <Select 
               allowClear={true}
               style={{width: "100%"}}
               placeholder="Select category"
-              options={
-                [{
-                value: "pizza",
-                label: "Pizza"
-              },
-              {
-                value: "beverages",
-                label: "Beverages",
-              }
-            ]
-            }
-              >
-            </Select>
+              options={categories?.data.map((category: Category) => ({
+                value: category._id,
+                label: category.name
+              }))}
+              />
             </Form.Item>
             </Col>
             <Col span={6}>
-            <Form.Item name="role">
+            <Form.Item name="restaurant">
               <Select
               allowClear={true}
               style={{width: "100%"}}
               placeholder="Select restaurant"
-              options={
-                [{
-                value: "hub",
-                label: "Pizza Hub"
-              },
-              {
-                value: "corner",
-                label: "Softy Corner",
-              }
-            ]
-            }
-              >
-            </Select>
+               options={restaurants?.data.data.map((restaurant: Tenant) => ({
+                value: restaurant.id,
+                label: restaurant.name
+              }))}
+              />
             </Form.Item>
             </Col>
         <Col span={6}

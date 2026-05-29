@@ -16,3 +16,4 @@ export const createTenant = (tenant: CreateTenantData) => api.post(`${AUTH_SERVI
 export const updateUser = (user: CreateUserData, id: string) => api.patch(`${AUTH_SERVICE}/users/${id}`, user);
 
 // Catalog Service
+export const getCategories = () => api.get(`${CATALOG_SERVICE}/categories`)
