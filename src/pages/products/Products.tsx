@@ -1,5 +1,5 @@
-import { PlusOutlined, RightOutlined, } from "@ant-design/icons"
-import { Breadcrumb, Button, Flex, Form, Image, Space, Table, Tag, Typography } from "antd"
+import { LoadingOutlined, PlusOutlined, RightOutlined, } from "@ant-design/icons"
+import { Breadcrumb, Button, Flex, Form, Image, Space, Spin, Table, Tag, Typography } from "antd"
 import { Link } from "react-router-dom"
 import ProductsFilter from "./ProductsFilter"
 import { useQuery, keepPreviousData } from "@tanstack/react-query"
@@ -76,10 +76,10 @@ const Products = () => {
     const [queryParams, setQueryParams] = useState({
       limit: PER_PAGE,
       page: 1,
-      isPublish: true
+      isPublish: false
     })
 
-     const { data: products } = useQuery({
+     const { data: products, isFetching, isError, error } = useQuery({
     queryKey: ["products", queryParams],
     queryFn: () =>  {
       const filteredParams = Object.fromEntries(Object.entries(queryParams).filter(item => !!item[1]))
@@ -132,9 +132,21 @@ const Products = () => {
       }
     ]}
     />
-            
+        {
+      isFetching && ( <Spin 
+      indicator={<LoadingOutlined 
+        style={{fontSize: 24}}
+        spin
+      />}
+      /> )
+    }
+    {
+      isError && <Typography.Text type="danger">
+        {error.message}  
+      </Typography.Text>
+    }
     </Flex>
-    <Form form={filterForm} onFieldsChange={onFilterChange} initialValues={{ isPublish: true }}>
+    <Form form={filterForm} onFieldsChange={onFilterChange} initialValues={{ isPublish: false }}>
       <ProductsFilter>
       <Button
           type="primary"
