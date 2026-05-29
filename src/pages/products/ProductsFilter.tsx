@@ -9,7 +9,6 @@ type ProductsFilterProps = {
 }
 
 const ProductsFilter = ({children}: ProductsFilterProps) => {
-
   const {data: restaurants} = useQuery({
     queryFn: () => {
       return getTenants(`perPage=100&currentPage=1`)
@@ -34,7 +33,7 @@ const ProductsFilter = ({children}: ProductsFilterProps) => {
             </Form.Item>
             </Col>
             <Col span={6}>
-            <Form.Item name="category">
+            <Form.Item name="categoryId">
               <Select 
               allowClear={true}
               style={{width: "100%"}}
@@ -47,7 +46,7 @@ const ProductsFilter = ({children}: ProductsFilterProps) => {
             </Form.Item>
             </Col>
             <Col span={6}>
-            <Form.Item name="restaurant">
+            <Form.Item name="tenantId">
               <Select
               allowClear={true}
               style={{width: "100%"}}
@@ -62,7 +61,9 @@ const ProductsFilter = ({children}: ProductsFilterProps) => {
         <Col span={6}
         >
             <Space>
-<Switch  defaultChecked onChange={() => {}} />
+              <Form.Item name={`isPublish`} valuePropName="checked">
+          <Switch  onChange={() => {}} />
+              </Form.Item>
                 <Typography.Text>
                     Show only published
                 </Typography.Text>
