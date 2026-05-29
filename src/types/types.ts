@@ -43,3 +43,14 @@ export type Category = {
   _id: number,
   name: string
 }
+
+export type Product = {
+  _id: string
+  name: string
+  description: string
+  category: Category
+  status: boolean
+  createdAt: string
+  image: string
+  isPublish: boolean
+}
