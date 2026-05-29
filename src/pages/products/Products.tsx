@@ -4,10 +4,11 @@ import { Link } from "react-router-dom"
 import ProductsFilter from "./ProductsFilter"
 import { useQuery, keepPreviousData } from "@tanstack/react-query"
 import { getProducts } from "../../http/api"
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { PER_PAGE } from "../../constants"
-import type { Product } from "../../types/types"
+import type { FieldData, Product } from "../../types/types"
 import { format } from "date-fns"
+import { debounce } from "lodash"
 
 const columns = [
   {
@@ -36,8 +37,8 @@ const columns = [
     key: "description"
   },{
     title: "Status",
-    dataIndex: "isPublish",
-    key: "isPublish",
+    dataIndex: "isPublished",
+    key: "isPublished",
     render: (_: boolean, record: Product) => {
       return <>
         {record.isPublish ? <Tag
@@ -73,8 +74,9 @@ const Products = () => {
     const [filterForm] = Form.useForm()
 
     const [queryParams, setQueryParams] = useState({
-      perPage: PER_PAGE,
-      currentPage: 1
+      limit: PER_PAGE,
+      page: 1,
+      isPublish: true
     })
 
      const { data: products } = useQuery({
@@ -86,6 +88,29 @@ const Products = () => {
     },
     placeholderData: keepPreviousData
   })
+
+    const debouncedQUpdate = useMemo(() => {
+      return debounce((value: string | undefined) => {
+        setQueryParams((prev) => ({...prev, q: value, page: 1}))
+      }, 500)
+    },[])
+
+  const onFilterChange = (changedFields: FieldData[]) => {
+
+    const changedFiltersFields = changedFields.map((item) => ({
+          [item.name[0]]: item.value
+      })).reduce((acc,item) => ({...acc, ...item}),{})
+
+      if("q" in changedFiltersFields){
+          debouncedQUpdate(changedFiltersFields.q)
+      } else{
+        setQueryParams((prev) => ({
+        ...prev,
+        ...changedFiltersFields,
+        page: 1
+      }))
+      }
+  }
 
   return (
     <>
@@ -109,7 +134,7 @@ const Products = () => {
     />
             
     </Flex>
-    <Form form={filterForm} onFieldsChange={() => {}}>
+    <Form form={filterForm} onFieldsChange={onFilterChange} initialValues={{ isPublish: true }}>
       <ProductsFilter>
       <Button
           type="primary"
@@ -139,16 +164,16 @@ const Products = () => {
   }
     ]} 
     dataSource={products?.data} 
-    rowKey={"id"} 
+    rowKey={"_id"} 
     pagination={{
       total: products?.total,
-      pageSize: queryParams.perPage,
-      current: queryParams.currentPage,
+      pageSize: queryParams.limit,
+      current: queryParams.page,
       onChange: (page) => {
         setQueryParams((prev) => {
           return {
             ...prev,
-            currentPage: page,
+            page,
           }
         })
       },
