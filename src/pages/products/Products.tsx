@@ -42,11 +42,12 @@ const columns = [
       return <>
         {record.isPublish ? <Tag
         color={`green`}
+        variant="outlined"
         >
           Published
         </Tag> : <Tag
         color={`red`}
-
+        variant="outlined"
         >
           Draft
         </Tag> }
