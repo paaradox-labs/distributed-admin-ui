@@ -170,6 +170,7 @@ const Products = () => {
         isPublish: form.getFieldValue("isPublish") ? true : false,
         image: form.getFieldValue("image"),
         categoryId,
+        tenantId: user?.role  === "manager" ? user.tenant?.id : form.getFieldValue("tenantId"),
         priceConfiguration: pricing,
         attributes
       }
