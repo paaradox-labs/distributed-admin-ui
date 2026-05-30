@@ -1,14 +1,17 @@
-import { Card, Col, Form, Input, Row, Select, Space, Switch, Typography, Upload } from 'antd';
+import { Card, Col, Form, Input, message, Row, Select, Space, Switch, Typography, Upload, type UploadProps } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useQuery } from '@tanstack/react-query';
 import { getCategories, getTenants } from '../../../http/api';
 import type { Category, Tenant } from '../../../types/types';
 import Attributes from './Attributes';
 import Pricing from './Pricing';
+import { useState } from 'react';
 
 const ProductForm = () => {
+    const [messageApi, contextHolder] = message.useMessage()
+    const [imageUrl, setImageUrl] = useState<string | null>(null)
+
     const selectedCategory = Form.useWatch('categoryId');
-    console.log(selectedCategory);
     
     const { data: categories } = useQuery({
         queryKey: ['categories'],
@@ -23,6 +26,23 @@ const ProductForm = () => {
             return getTenants(`perPage=100&currentPage=1`);
         },
     });
+    
+    const uploaderConfig: UploadProps = {
+        name: "file",
+        multiple: false,
+        showUploadList: false,
+        beforeUpload: (file) => {
+            const isJpgOrPng = file.type === "image/jpeg" || file.type  === "image/png"
+            if(!isJpgOrPng){
+                messageApi.error("You can only upload JPG/PNG file!")
+            }
+
+            // todo : size validation
+            setImageUrl(URL.createObjectURL(file))
+
+            return false
+        }        
+    }
 
     return (
         <Row>
@@ -40,7 +60,7 @@ const ProductForm = () => {
                                             message: 'Product name is required',
                                         },
                                     ]}>
-                                    <Input size="large" />
+                                    <Input size="large" placeholder='Pizza' />
                                 </Form.Item>
                             </Col>
                             <Col span={12}>
@@ -79,6 +99,7 @@ const ProductForm = () => {
                                         },
                                     ]}>
                                     <Input.TextArea
+                                        placeholder='This is a very delicious Pizza'
                                         rows={2}
                                         maxLength={100}
                                         style={{ resize: 'none' }}
@@ -100,11 +121,16 @@ const ProductForm = () => {
                                             message: 'Please upload a product image',
                                         },
                                     ]}>
-                                    <Upload listType="picture-card">
+                                    {contextHolder}
+                                    <Upload listType="picture-card" {...uploaderConfig} >
+                                        {
+                                            imageUrl ? <img src={imageUrl} alt='picture' style={{width: "100%"}} /> : (
                                         <Space orientation="vertical">
                                             <PlusOutlined />    
                                             <Typography.Text>Upload</Typography.Text>
                                         </Space>
+                                            )
+                                        }
                                     </Upload>
                                 </Form.Item>
                             </Col>

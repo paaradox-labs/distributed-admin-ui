@@ -71,3 +71,9 @@ export type Product = {
   image: string
   isPublish: boolean
 }
+
+export type ImageField = { file: File }
+
+export type CreateProductData = Product & {
+    image: ImageField
+}

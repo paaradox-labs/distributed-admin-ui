@@ -2,8 +2,8 @@ import { LoadingOutlined, PlusOutlined, RightOutlined, } from "@ant-design/icons
 import { Breadcrumb, Button, Drawer, Flex, Form, Image, Space, Spin, Table, Tag, theme, Typography } from "antd"
 import { Link } from "react-router-dom"
 import ProductsFilter from "./ProductsFilter"
-import { useQuery, keepPreviousData } from "@tanstack/react-query"
-import { getProducts } from "../../http/api"
+import { useQuery, keepPreviousData, useMutation, useQueryClient } from "@tanstack/react-query"
+import { createProduct, getProducts } from "../../http/api"
 import { useMemo, useState } from "react"
 import { PER_PAGE } from "../../constants"
 import type { FieldData, Product } from "../../types/types"
@@ -11,6 +11,7 @@ import { format } from "date-fns"
 import { debounce } from "lodash"
 import { useAuthStore } from "../../store"
 import ProductForm from "./forms/ProductForm"
+import { makeFormData } from "./helpers"
 
 const columns = [
   {
@@ -103,28 +104,81 @@ const Products = () => {
 
   const onFilterChange = (changedFields: FieldData[]) => {
 
-    const changedFiltersFields = changedFields.map((item) => ({
+    const changedFiltersField = changedFields.map((item) => ({
           [item.name[0]]: item.value
       })).reduce((acc,item) => ({...acc, ...item}),{})
 
-      if("q" in changedFiltersFields){
-          debouncedQUpdate(changedFiltersFields.q)
+      if("q" in changedFiltersField){
+          debouncedQUpdate(changedFiltersField.q)
       } else{
         setQueryParams((prev) => ({
         ...prev,
-        ...changedFiltersFields,
+        ...changedFiltersField,
         page: 1
       }))
       }
   }
 
-  const [drawerOpen, setDrawerOper] = useState(false)
+  const [drawerOpen, setDrawerOpen] = useState(false)
 
     const { token: {colorBgLayout} } = theme.useToken()
 
-    const onHandleSubmit = () => {
-      console.log("submitting..");
-      setDrawerOper(false)
+    const queryClient = useQueryClient()
+
+
+     const { mutate: productMutate } = useMutation({
+        mutationKey: ["product"],
+        mutationFn: async (data: FormData) => createProduct(data).then((res) => res.data),
+        onSuccess: async() => {
+            queryClient.invalidateQueries({
+                queryKey: ["products"]
+            })
+            form.resetFields()
+            setDrawerOpen(false)
+            return
+        }
+    })
+
+    const onHandleSubmit = async() => {
+
+      const priceConfiguration = form.getFieldValue("priceConfiguration")
+      
+      const pricing = Object.entries(priceConfiguration).reduce((acc,[key, value]) => {
+        const parsedKey = JSON.parse(key);
+
+        return{
+          ...acc,
+          [parsedKey.configurationKey]: {
+            priceType: parsedKey.priceType,
+            availableOptions: value
+          }
+        }
+      }, {})
+
+      const categoryId = JSON.parse(form.getFieldValue("categoryId"))._id
+
+      const attributes = Object.entries(form.getFieldValue("attributes")  ).map(([key, value]) => {
+        return{ 
+          name: key,
+          value    
+        }
+      })
+      
+
+      const postData = {
+        ...form.getFieldsValue(),
+        isPublish: form.getFieldValue("isPublish") ? true : false,
+        image: form.getFieldValue("image"),
+        categoryId,
+        priceConfiguration: pricing,
+        attributes
+      }
+      
+      await form.validateFields()
+
+      const formData = makeFormData(postData)
+
+      await productMutate(formData)
     }
 
 
@@ -167,7 +221,7 @@ const Products = () => {
       <Button
           type="primary"
           icon={<PlusOutlined />}
-          onClick={() => setDrawerOper(true)}
+          onClick={() => setDrawerOpen(true)}
           >
             Add Products 
           </Button>
@@ -215,18 +269,17 @@ const Products = () => {
     styles={{body: {background: colorBgLayout}}}
     size={720} 
     destroyOnHidden={true}
-    onClick={() => {console.log("Closing")}}
     open={drawerOpen}
     onClose={()=>{
       form.resetFields()
-      setDrawerOper(false)
+      setDrawerOpen(false)
     }}
     extra={
       <Space>
         <Button
         onClick={() => {
           form.resetFields()
-          setDrawerOper(false)
+          setDrawerOpen(false)
         }}
         >
           Cancel
