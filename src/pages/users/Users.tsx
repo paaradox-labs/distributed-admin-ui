@@ -250,7 +250,6 @@ const Users = () => {
     styles={{body: {background: colorBgLayout}}}
     size={720} 
     destroyOnHidden={true}
-    onClick={() => {console.log("Closing")}}
     open={drawerOpen}
     onClose={()=>{
       form.resetFields()

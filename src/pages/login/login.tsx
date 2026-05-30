@@ -27,6 +27,7 @@ const getSelf = async () => {
 };
 
 const LoginPage = () => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { data: selfData, refetch } = useQuery({
     queryKey: ["self"],
     queryFn: getSelf,
@@ -39,9 +40,7 @@ const LoginPage = () => {
     onSuccess: async () => {
       // getSelf
       refetch();
-      console.log(`userData: ${selfData}`);
       // store in the state
-      console.log("Login successful.");
     },
   });
 
@@ -88,7 +87,6 @@ const LoginPage = () => {
               }}
               onFinish={(values) => {
                 mutate({ email: values.username, password: values.password });
-                console.log(values);
               }}
             >
               {isError && (
