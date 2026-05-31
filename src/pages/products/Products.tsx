@@ -4,7 +4,7 @@ import { Link } from "react-router-dom"
 import ProductsFilter from "./ProductsFilter"
 import { useQuery, keepPreviousData, useMutation, useQueryClient } from "@tanstack/react-query"
 import { createProduct, getProducts } from "../../http/api"
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { PER_PAGE } from "../../constants"
 import type { FieldData, Product } from "../../types/types"
 import { format } from "date-fns"
@@ -74,7 +74,42 @@ const columns = [
 
 const Products = () => {
 
+    const [drawerOpen, setDrawerOpen] = useState(false)
     const [form] = Form.useForm()
+    const [selectedProduct, setCurrentProduct] = useState<Product | null>(null)
+
+    useEffect(() => {
+      if(selectedProduct){
+        const priceConfiguration  = Object.entries(selectedProduct.priceConfiguration).reduce((acc, [key, value]) => {
+          const stringifiedKey = JSON.stringify({
+            configurationKey: key,
+            priceType: value.priceType
+          })
+          return {
+            ...acc,
+            [stringifiedKey]: value.availableOptions,
+          }
+        },
+        {})
+
+        const attributes = selectedProduct.attributes.reduce((acc, item) => {
+          return{
+            ...acc,
+            [item.name]: item.value
+          }
+        },{})
+
+        form.setFieldsValue({
+          ...selectedProduct,
+          priceConfiguration,
+          attributes,
+          // todo : fix this
+          categoryId: selectedProduct.category._id
+        })
+      }
+    }, [selectedProduct])
+
+
 
     const [filterForm] = Form.useForm()
     const { user } = useAuthStore()
@@ -119,7 +154,6 @@ const Products = () => {
       }
   }
 
-  const [drawerOpen, setDrawerOpen] = useState(false)
 
     const { token: {colorBgLayout} } = theme.useToken()
 
@@ -155,7 +189,7 @@ const Products = () => {
         }
       }, {})
 
-      const categoryId = JSON.parse(form.getFieldValue("categoryId"))._id
+      const categoryId = JSON.parse(form.getFieldValue("categoryId" as string))._id
 
       const attributes = Object.entries(form.getFieldValue("attributes")  ).map(([key, value]) => {
         return{ 
@@ -232,11 +266,14 @@ const Products = () => {
     columns={[...columns,
       {
     title: "Actions",
-    render: () => {
+    render: (_,record: Product) => {
       return(
         <Space>
           <Button
-          onClick={() => {}}
+          onClick={() => {
+            setCurrentProduct(record) 
+            setDrawerOpen(true)
+          }}
           type="link"
           >
             Edit
