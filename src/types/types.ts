@@ -61,6 +61,11 @@ export type Category = {
   attributes: Attribute[];
 }
 
+export type ProductAttribute = {
+    name: string
+    value: string | boolean;
+}
+
 export type Product = {
   _id: string
   name: string
@@ -70,6 +75,8 @@ export type Product = {
   createdAt: string
   image: string
   isPublish: boolean
+  priceConfiguration: PriceConfiguration
+  attributes: ProductAttribute[]
 }
 
 export type ImageField = { file: File }

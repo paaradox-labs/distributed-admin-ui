@@ -63,7 +63,7 @@ const ProductForm = () => {
                                         placeholder="Select category" 
                                             options={
                                                 categories?.data.map((category: Category) => ({
-                                                    value: JSON.stringify(category),
+                                                    value: category._id,
                                                     label: category.name
                                                 }))
                                             }
@@ -121,7 +121,7 @@ const ProductForm = () => {
                                         placeholder="Select restaurant"
                                         options={
                                             restaurants?.data.data.map((tenant: Tenant) => ({
-                                                value: tenant.id,
+                                                value: String(tenant.id),
                                                 label: tenant.name
                                             })
                                             )}
