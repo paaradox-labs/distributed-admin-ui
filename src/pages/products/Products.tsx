@@ -3,7 +3,7 @@ import { Breadcrumb, Button, Drawer, Flex, Form, Image, Space, Spin, Table, Tag,
 import { Link } from "react-router-dom"
 import ProductsFilter from "./ProductsFilter"
 import { useQuery, keepPreviousData, useMutation, useQueryClient } from "@tanstack/react-query"
-import { createProduct, getProducts } from "../../http/api"
+import { createProduct, getProducts, updateProduct } from "../../http/api"
 import { useEffect, useMemo, useState } from "react"
 import { PER_PAGE } from "../../constants"
 import type { FieldData, Product } from "../../types/types"
@@ -162,7 +162,15 @@ const Products = () => {
 
      const { mutate: productMutate, isPending: isCreatingLoading} = useMutation({
         mutationKey: ["product"],
-        mutationFn: async (data: FormData) => createProduct(data).then((res) => res.data),
+        mutationFn: async (data: FormData) => {
+          if(selectedProduct){
+            // edit mode 
+            return updateProduct(data, selectedProduct._id).then(res => res.data)
+          } else {
+            // create mode
+            return createProduct(data).then((res) => res.data)
+          }
+        },
         onSuccess: async() => {
             queryClient.invalidateQueries({
                 queryKey: ["products"]
@@ -189,7 +197,7 @@ const Products = () => {
         }
       }, {})
 
-      const categoryId = JSON.parse(form.getFieldValue("categoryId" as string))._id
+      const categoryId = form.getFieldValue("categoryId")
 
       const attributes = Object.entries(form.getFieldValue("attributes")  ).map(([key, value]) => {
         return{ 
@@ -303,12 +311,13 @@ const Products = () => {
     }}
     />
       <Drawer
-    title= {"Add Product"}
+    title= {selectedProduct ? "Edit Product" : "Add Product"}
     styles={{body: {background: colorBgLayout}}}
     size={720} 
     destroyOnHidden={true}
     open={drawerOpen}
     onClose={()=>{
+      setCurrentProduct(null)
       form.resetFields()
       setDrawerOpen(false)
     }}
@@ -316,6 +325,7 @@ const Products = () => {
       <Space>
         <Button
         onClick={() => {
+          setCurrentProduct(null)
           form.resetFields()
           setDrawerOpen(false)
         }}
