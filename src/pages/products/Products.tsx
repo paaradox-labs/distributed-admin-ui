@@ -107,7 +107,7 @@ const Products = () => {
           categoryId: selectedProduct.category._id
         })
       }
-    }, [selectedProduct])
+    }, [selectedProduct, form])
 
 
 
@@ -336,7 +336,7 @@ const Products = () => {
      layout="vertical"
      form={form}
      >
-      <ProductForm />
+      <ProductForm form={form} />
      </Form>
     </Drawer>
     </Space>
