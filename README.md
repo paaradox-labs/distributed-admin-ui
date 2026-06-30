@@ -1,4 +1,4 @@
-# Admin Dashboard
+# MERN Space - Admin UI
 
 A multi-tenant restaurant management admin dashboard built with React and TypeScript. Provides a frontend interface for managing users, restaurant tenants, products (menu items), and orders with role-based access control. Authentication is handled via HTTP-only cookies with automatic token refresh.
 
