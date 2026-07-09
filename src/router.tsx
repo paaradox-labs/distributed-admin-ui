@@ -9,6 +9,7 @@ import LoginPage from "./pages/login/login.js";
 import Products from "./pages/products/Products.js";
 import Promos from "./pages/promos/Promos.js";
 import Orders from "./pages/orders/Orders.js";
+import SingleOrder from "./pages/orders/SingleOrder.js";
 
 export const router = createBrowserRouter([
   {
@@ -41,8 +42,12 @@ export const router = createBrowserRouter([
             element: <Orders />
           },
           {
+            path: '/orders/:orderId',
+            element: <SingleOrder />,
+          },
+          {
             path: "/promos",
-            element: <Promos />
+            element: <Promos />,
           }
         ],
       },
