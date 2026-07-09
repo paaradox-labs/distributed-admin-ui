@@ -1,38 +1,22 @@
 import { LoadingOutlined, PlusOutlined, RightOutlined } from "@ant-design/icons"
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { Breadcrumb, Button, Drawer, Flex, Form, Space, Spin, Table, theme, Typography } from "antd"
+import { Breadcrumb, Button, Descriptions, Drawer, Flex, Form, Grid, Space, Spin, Table, theme, Typography } from "antd"
 import { Link, Navigate } from "react-router-dom"
 import { createTenant, getTenants } from "../../http/api"
 import { useMemo, useState } from "react"
 import { useAuthStore } from "../../store"
 import TenantFilter from "./TenantFilter"
 import TenantForm from "./forms/TenantForm"
-import type { CreateTenantData, FieldData } from "../../types/types"
+import type { CreateTenantData, FieldData, Tenant } from "../../types/types"
 import { PER_PAGE } from "../../constants"
 import { debounce } from "lodash"
-
-const columns = [
-    {
-        title: "ID",
-        dataIndex: "id",
-        key: "id"
-    },
-    {
-        title: "Name",
-        dataIndex: "name",
-        key: "name",
-    },
-    {
-        title: "Address",
-        dataIndex: "address",
-        key: "address"
-    }
-]
 
 
 const Tenants = () => {
 
     const { token: {colorBgLayout} } = theme.useToken()
+    const screens = Grid.useBreakpoint()
+    const isMobile = !screens.md
 
     const [form] = Form.useForm()
 
@@ -111,10 +95,28 @@ const Tenants = () => {
         return <Navigate to={`/`} replace={true} />
     }
 
+    const columns = [
+        ...(isMobile ? [] : [{
+            title: "ID",
+            dataIndex: "id",
+            key: "id"
+        }]),
+        {
+            title: "Name",
+            dataIndex: "name",
+            key: "name",
+        },
+        {
+            title: "Address",
+            dataIndex: "address",
+            key: "address"
+        }
+    ]
+
     return(
         <>
             <Space orientation="vertical" size="large" style={{ width: '100%' }}>
-                <Flex>
+                <Flex justify="space-between" align="center" wrap="wrap">
                 <Breadcrumb
                 separator={<RightOutlined />}
                 items={[{
@@ -126,6 +128,7 @@ const Tenants = () => {
                 title: "Tenants"
                  }]}
                 />
+                <Space>
             {isFetching && ( <Spin 
             indicator={<LoadingOutlined 
             style={{fontSize: 24}}
@@ -138,7 +141,7 @@ const Tenants = () => {
             {error.message}  
             </Typography.Text>
     }
-
+            </Space>
                 </Flex>
                 
            <Form
@@ -156,10 +159,18 @@ const Tenants = () => {
             </TenantFilter>
            </Form>
             
-            <Table 
-            columns={columns} 
-            dataSource={tenants?.data} 
-            rowKey={"id"} 
+            <Table
+            columns={columns}
+            dataSource={tenants?.data}
+            rowKey={"id"}
+            expandable={isMobile ? {
+              expandedRowRender: (record: Tenant) => (
+                <Descriptions size="small" column={1} bordered>
+                  <Descriptions.Item label="ID">{record.id}</Descriptions.Item>
+                </Descriptions>
+              ),
+              rowExpandable: () => true,
+            } : undefined}
             pagination={{
                 total: tenants?.total,
                 pageSize: queryParams.perPage,
@@ -181,7 +192,7 @@ const Tenants = () => {
              <Drawer
                     title="Create restaurant"
                     styles={{body:{backgroundColor: colorBgLayout}}}
-                    size={720}
+                    width={Math.min(720, window.innerWidth - 48)}
                     destroyOnHidden={true}
                     open={drawerOpen}
                     onClose={() => {

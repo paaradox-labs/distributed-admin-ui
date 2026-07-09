@@ -7,16 +7,16 @@ type UserFilterProps = {
 const UsersFilter = ({children}: UserFilterProps) => {
   return (
     <Card>
-      <Row justify="space-between">
-        <Col span={16}>
-          <Row gutter={20}>
-            <Col span={8}>
-            <Form.Item name="q">
+      <Row justify="space-between" gutter={[0, 12]}>
+        <Col xs={24} lg={16}>
+          <Row gutter={[12, 12]}>
+            <Col xs={24} sm={12} lg={8}>
+            <Form.Item name="q" style={{ marginBottom: 0 }}>
                 <Input.Search placeholder="Search"  allowClear={true}/>
             </Form.Item>
             </Col>
-            <Col span={8}>
-            <Form.Item name="role">
+            <Col xs={24} sm={12} lg={8}>
+            <Form.Item name="role" style={{ marginBottom: 0 }}>
               <Select
               allowClear={true}
               style={{width: "100%"}}
@@ -39,30 +39,10 @@ const UsersFilter = ({children}: UserFilterProps) => {
             </Select>
             </Form.Item>
             </Col>
-            {/* <Col span={8}>
-            <Select
-            allowClear={true}
-            onChange={(selectedItem) => onFilterChange("statusFilter", selectedItem)}
-              style={{width: "100%"}}            
-              placeholder="Status"
-              options={
-                [{
-                value: "ban",
-                label: "Banned"
-              },
-              {
-                value: "active",
-                label: "Active",
-              }
-            ]
-            }
-              >
-            </Select>
-            </Col> */}
           </Row>
         </Col>
-        <Col span={8}
-        style={{display: "flex",justifyContent: "end"}}
+        <Col xs={24} lg={8}
+        style={{display: "flex", justifyContent: "end"}}
         >
           {children}
         </Col>

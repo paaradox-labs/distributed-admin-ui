@@ -66,7 +66,8 @@ const LoginPage = () => {
           <Card
             variant="borderless"
             style={{
-              width: 300,
+              width: "100%",
+              maxWidth: 300,
             }}
             title={
               <Space

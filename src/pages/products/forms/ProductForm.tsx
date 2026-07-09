@@ -31,8 +31,8 @@ const ProductForm = ({form}: {form: FormInstance}) => {
             <Col span={24}>
                 <Space style={{width: "100%"}} orientation="vertical" size="large">
                     <Card title="Product info" variant={`borderless`}>
-                        <Row gutter={20}>
-                            <Col span={12}>
+                        <Row gutter={[20, 12]}>
+                            <Col xs={24} sm={12}>
                                 <Form.Item
                                     label="Product name"
                                     name="name"
@@ -45,7 +45,7 @@ const ProductForm = ({form}: {form: FormInstance}) => {
                                     <Input size="large" placeholder='Pizza' />
                                 </Form.Item>
                             </Col>
-                            <Col span={12}>
+                            <Col xs={24} sm={12}>
                                 <Form.Item
                                     label="Category"
                                     name="categoryId"
@@ -70,7 +70,7 @@ const ProductForm = ({form}: {form: FormInstance}) => {
                                              />
                                 </Form.Item>
                             </Col>
-                            <Col span={24}>
+                            <Col xs={24}>
                                 <Form.Item
                                     label="Description"
                                     name="description"
@@ -92,8 +92,8 @@ const ProductForm = ({form}: {form: FormInstance}) => {
                         </Row>
                     </Card>
                     <Card title="Product image" variant={`borderless`}>
-                        <Row gutter={20}>
-                            <Col span={12}>
+                        <Row gutter={[20, 12]}>
+                            <Col xs={24} sm={12}>
                                 <ProductImage initialImage={form.getFieldValue("image")} />
                             </Col>
                         </Row>

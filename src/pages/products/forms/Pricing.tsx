@@ -31,13 +31,13 @@ const Pricing = ({selectedCategory}: PricingProps) => {
                     {`${configurationKey} (${configurationValue.priceType})`}
                 </Typography.Text>
                 <Row
-                gutter={20}
+                gutter={[20, 12]}
                 >
                     {
                         configurationValue.availableOptions.map((option: string) => {
                             return(
                                 <Col
-                                span={8}
+                                xs={24} sm={8}
                                 key={option}
                                 >
                                     <Form.Item

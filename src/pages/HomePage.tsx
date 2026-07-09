@@ -79,15 +79,15 @@ function HomePage() {
   return (
      <div>
             <Title level={4}>Welcome, {user.firstName} 😀</Title>
-            <Row className="mt-4" gutter={16}>
-                <Col span={12}>
+            <Row gutter={[16, 16]}>
+                <Col xs={24} lg={12}>
                     <Row gutter={[16, 16]}>
-                        <Col span={12}>
+                        <Col xs={12}>
                             <Card variant={`borderless`}>
                                 <Statistic title="Total orders" value={52} />
                             </Card>
                         </Col>
-                        <Col span={12}>
+                        <Col xs={12}>
                             <Card variant={`borderless`}>
                                 <Statistic
                                     title="Total sale"
@@ -97,7 +97,7 @@ function HomePage() {
                                 />
                             </Card>
                         </Col>
-                        <Col span={24}>
+                        <Col xs={24}>
                         
                             <Card
                                 title={<CardTitle title="Sales" PrefixIcon={BarChartIcon} />}
@@ -105,7 +105,7 @@ function HomePage() {
                         </Col>
                     </Row>
                 </Col>
-                <Col span={12}>
+                <Col xs={24} lg={12}>
                     <Card
                         variant={`borderless`}
                         title={<CardTitle title="Recent orders" PrefixIcon={BasketIcon} />}>
