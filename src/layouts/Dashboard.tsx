@@ -159,7 +159,7 @@ const Dashboard = () => {
       <Outlet />
         </Content>
         <Footer style={{ textAlign: 'center' }}>
-          Mernspace pizza shop
+          Feeding food is a noble cause ❤️
         </Footer>
       </Layout>
     </Layout>
