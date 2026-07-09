@@ -36,3 +36,4 @@ export const updateProduct = (product: FormData, id: string) => {
 // Order Service
 export const getCoupons = (queryString: string) => api.get(`${ORDER_SERVICE}/coupons?${queryString}`);
 export const createCoupon = (data: CreateCouponData) => api.post(`${ORDER_SERVICE}/coupons`, data);
+export const getOrders = (queryString: string) => api.get(`${ORDER_SERVICE}/orders?${queryString}`);
