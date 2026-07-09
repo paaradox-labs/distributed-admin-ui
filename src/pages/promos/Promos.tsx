@@ -1,6 +1,6 @@
 import { LoadingOutlined, PlusOutlined, RightOutlined } from "@ant-design/icons"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { Breadcrumb, Button, Drawer, Flex, Form, Space, Spin, Table, Tag, theme, Typography } from "antd"
+import { Breadcrumb, Button, Descriptions, Drawer, Flex, Form, Grid, Space, Spin, Table, Tag, theme, Typography } from "antd"
 import { Link } from "react-router-dom"
 import { createCoupon, getCoupons } from "../../http/api"
 import { useMemo, useState } from "react"
@@ -12,44 +12,11 @@ import { PER_PAGE } from "../../constants"
 import { debounce } from "lodash"
 import { format } from "date-fns"
 
-const columns = [
-    {
-        title: "Title",
-        dataIndex: "title",
-        key: "title",
-        width: "30%",
-    },
-    {
-        title: "Code",
-        dataIndex: "code",
-        key: "code",
-        width: "20%",
-    },
-    {
-        title: "Discount",
-        dataIndex: "discount",
-        key: "discount",
-        width: "15%",
-        render: (_: string, record: Coupon) => (
-            <Tag color="blue">{record.discount}%</Tag>
-        ),
-    },
-    {
-        title: "Valid Upto",
-        dataIndex: "validUpto",
-        key: "validUpto",
-        width: "35%",
-        render: (text: string) => (
-            <Typography.Text>
-                {format(new Date(text), "dd/MM/yyyy hh:mm a")}
-            </Typography.Text>
-        ),
-    },
-]
-
 const Promos = () => {
 
     const { token: { colorBgLayout } } = theme.useToken()
+    const screens = Grid.useBreakpoint()
+    const isMobile = !screens.md
     const [form] = Form.useForm()
     const [filterForm] = Form.useForm()
     const { user } = useAuthStore()
@@ -117,6 +84,40 @@ const Promos = () => {
         }
     }
 
+    const columns = [
+        {
+            title: "Title",
+            dataIndex: "title",
+            key: "title",
+            render: (text: string) => <div style={{ wordBreak: "break-word" }}>{text}</div>,
+        },
+        ...(isMobile ? [] : [{
+            title: "Code",
+            dataIndex: "code",
+            key: "code",
+            render: (text: string) => <div style={{ wordBreak: "break-word" }}>{text}</div>,
+        }]),
+        {
+            title: "Discount",
+            dataIndex: "discount",
+            key: "discount",
+            width: 100,
+            render: (_: string, record: Coupon) => (
+                <Tag color="blue">{record.discount}%</Tag>
+            ),
+        },
+        ...(isMobile ? [] : [{
+            title: "Valid Upto",
+            dataIndex: "validUpto",
+            key: "validUpto",
+            render: (text: string) => (
+                <Typography.Text>
+                    {format(new Date(text), "dd/MM/yyyy hh:mm a")}
+                </Typography.Text>
+            ),
+        }]),
+    ]
+
     return (
         <>
             <Space orientation="vertical" size="large" style={{ width: "100%" }}>
@@ -156,8 +157,16 @@ const Promos = () => {
                     columns={columns}
                     dataSource={coupons?.data}
                     rowKey={"_id"}
-                    scroll={{ x: "100%" }}
                     loading={isFetching}
+                    expandable={isMobile ? {
+                      expandedRowRender: (record: Coupon) => (
+                        <Descriptions size="small" column={1} bordered>
+                          <Descriptions.Item label="Code">{record.code}</Descriptions.Item>
+                          <Descriptions.Item label="Valid Upto">{format(new Date(record.validUpto), "dd/MM/yyyy hh:mm a")}</Descriptions.Item>
+                        </Descriptions>
+                      ),
+                      rowExpandable: () => true,
+                    } : undefined}
                     pagination={{
                         total: coupons?.total,
                         pageSize: queryParams.perPage,
@@ -174,7 +183,7 @@ const Promos = () => {
                 <Drawer
                     title="Create Coupon"
                     styles={{ body: { background: colorBgLayout } }}
-                    size={720}
+                    width={Math.min(720, window.innerWidth - 48)}
                     destroyOnHidden={true}
                     open={drawerOpen}
                     onClose={() => {

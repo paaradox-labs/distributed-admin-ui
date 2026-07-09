@@ -6,8 +6,8 @@ const TenantForm = () => {
     <Row>
         <Col span={24}>
             <Card title="Basic info" variant="borderless" style={{width: "100%"}} >
-                <Row gutter={20}>
-                    <Col span={12}>
+                <Row gutter={[20, 12]}>
+                    <Col xs={24} sm={12}>
                         <Form.Item
                         label = "Name"
                         name = "name"
@@ -21,7 +21,7 @@ const TenantForm = () => {
                     <Input placeholder="Taj Restaurant" size="large" />
                     </Form.Item>
                     </Col>
-                    <Col span={12}>
+                    <Col xs={24} sm={12}>
                         <Form.Item
                         label="Address"
                         name="address"

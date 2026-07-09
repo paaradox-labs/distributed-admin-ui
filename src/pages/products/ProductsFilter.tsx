@@ -26,16 +26,16 @@ const ProductsFilter = ({children}: ProductsFilterProps) => {
   })
 
   return <Card>
-    <Row justify={"space-between"}>
-        <Col span={16}>
-            <Row gutter={20}>
-            <Col span={6}>
-            <Form.Item name="q">
+    <Row justify={"space-between"} gutter={[0, 12]}>
+        <Col xs={24} lg={16}>
+            <Row gutter={[12, 12]}>
+            <Col xs={24} sm={12} lg={6}>
+            <Form.Item name="q" style={{ marginBottom: 0 }}>
                 <Input.Search placeholder="Search"  allowClear={true}/>
             </Form.Item>
             </Col>
-            <Col span={6}>
-            <Form.Item name="categoryId">
+            <Col xs={24} sm={12} lg={6}>
+            <Form.Item name="categoryId" style={{ marginBottom: 0 }}>
               <Select 
               allowClear={true}
               style={{width: "100%"}}
@@ -50,8 +50,8 @@ const ProductsFilter = ({children}: ProductsFilterProps) => {
             
             {
               user?.role === "admin" && (
-            <Col span={6}>
-            <Form.Item name="tenantId">
+            <Col xs={24} sm={12} lg={6}>
+            <Form.Item name="tenantId" style={{ marginBottom: 0 }}>
               <Select
               allowClear={true}
               style={{width: "100%"}}
@@ -66,20 +66,19 @@ const ProductsFilter = ({children}: ProductsFilterProps) => {
               ) 
             }
            
-        <Col span={6}
-        >
-            <Space>
-              <Form.Item name={`isPublish`} valuePropName="checked">
-          <Switch defaultChecked={false}  onChange={() => {}} />
-              </Form.Item>
-                <Typography.Text style={{ marginBottom: 22, display: 'block' }}>
-                    Show only published
-                </Typography.Text>
-            </Space>
+        <Col xs={24} sm={12} lg={6}>
+            <Form.Item name={`isPublish`} valuePropName="checked" style={{ marginBottom: 0 }}>
+                <Space>
+                  <Switch defaultChecked={false}  onChange={() => {}} />
+                    <Typography.Text>
+                        Show only published
+                    </Typography.Text>
+                </Space>
+            </Form.Item>
         </Col>
           </Row>
         </Col>
-         <Col span={8} style={{display: "flex", justifyContent: "end"}}>
+         <Col xs={24} lg={8} style={{ display: "flex", justifyContent: "end" }}>
             {children}
         </Col>
     </Row>

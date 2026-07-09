@@ -1,5 +1,5 @@
 import { LoadingOutlined, PlusOutlined, RightOutlined, } from "@ant-design/icons"
-import { Breadcrumb, Button, Drawer, Flex, Form, Image, Space, Spin, Table, Tag, theme, Typography } from "antd"
+import { Breadcrumb, Button, Descriptions, Drawer, Flex, Form, Image, Space, Spin, Table, Tag, theme, Typography, Grid } from "antd"
 import { Link } from "react-router-dom"
 import ProductsFilter from "./ProductsFilter"
 import { useQuery, keepPreviousData, useMutation, useQueryClient } from "@tanstack/react-query"
@@ -13,70 +13,15 @@ import { useAuthStore } from "../../store"
 import ProductForm from "./forms/ProductForm"
 import { makeFormData } from "./helpers"
 
-const columns = [
-  {
-    title: "Product Name",
-    dataIndex: "name",
-    key: "name",
-    render: (_:string, record: Product) => {
-        return(
-          <div>
-             <Space>
-                <Image 
-                width={60}
-                src={record.image}
-                />
-                <Typography.Text>
-                  {record.name}
-                </Typography.Text>
-             </Space>
-          </div>
-        )
-    }
-  },
-  {
-    title: "Description",
-    dataIndex: "description",
-    key: "description"
-  },{
-    title: "Status",
-    dataIndex: "isPublished",
-    key: "isPublished",
-    render: (_: boolean, record: Product) => {
-      return <>
-        {record.isPublish ? <Tag
-        color={`green`}
-        variant="outlined"
-        >
-          Published
-        </Tag> : <Tag
-        color={`red`}
-        variant="outlined"
-        >
-          Draft
-        </Tag> }
-      </>
-    }
-  },{
-    title: "CreatedAt",
-    dataIndex: "createdAt",
-    key: "createdAt",
-    render: (text:string) => {
-      return (
-        <Typography.Text>
-          {format(new Date(text), "dd/MM/yyyy hh:mm a" )}
-        </Typography.Text>
-      )
-    }
-  }
-]
-
 
 const Products = () => {
 
     const [drawerOpen, setDrawerOpen] = useState(false)
     const [form] = Form.useForm()
     const [selectedProduct, setCurrentProduct] = useState<Product | null>(null)
+
+    const screens = Grid.useBreakpoint()
+    const isMobile = !screens.md
 
     useEffect(() => {
       if(selectedProduct){
@@ -224,6 +169,67 @@ const Products = () => {
       await productMutate(formData)
     }
 
+    const columns = [
+      {
+        title: "Product Name",
+        dataIndex: "name",
+        key: "name",
+        render: (_:string, record: Product) => {
+            return(
+              <Space>
+                {!isMobile && <Image width={60} src={record.image} />}
+                <Typography.Text>{record.name}</Typography.Text>
+              </Space>
+            )
+        }
+      },
+      ...(isMobile ? [] : [{
+        title: "Description",
+        dataIndex: "description",
+        key: "description",
+        render: (text: string) => (
+          <div style={{ wordBreak: "break-word" }}>{text}</div>
+        ),
+      }]),
+      {
+        title: "Status",
+        dataIndex: "isPublished",
+        key: "isPublished",
+        render: (_: boolean, record: Product) => {
+          return <>
+            {record.isPublish ? <Tag color={`green`} variant="outlined">Published</Tag> : <Tag color={`red`} variant="outlined">Draft</Tag> }
+          </>
+        }
+      },
+      ...(isMobile ? [] : [{
+        title: "CreatedAt",
+        dataIndex: "createdAt",
+        key: "createdAt",
+        render: (text:string) => {
+          return (
+            <Typography.Text>
+              {format(new Date(text), "dd/MM/yyyy hh:mm a" )}
+            </Typography.Text>
+          )
+        }
+      }]),
+      {
+        title: "Actions",
+        render: (_,record: Product) => {
+          return(
+            <Button
+              onClick={() => {
+                setCurrentProduct(record) 
+                setDrawerOpen(true)
+              }}
+              type="link"
+            >
+              Edit
+            </Button>
+          )
+        }
+      }
+    ]
 
   return (
     <>
@@ -232,32 +238,22 @@ const Products = () => {
     size={`large`}
     style={{width: "100%"}}
     >
-         <Flex
-    justify="space-between"
-    >
-      <Breadcrumb 
-    separator = {<RightOutlined />}
-    items={[
-      {
-        title: <Link to={"/"}>Dashboard</Link>
-      },{
-        title: "Products"
-      }
-    ]}
-    />
-        {
-      isFetching && ( <Spin 
-      indicator={<LoadingOutlined 
-        style={{fontSize: 24}}
-        spin
-      />}
-      /> )
-    }
-    {
-      isError && <Typography.Text type="danger">
-        {error.message}  
-      </Typography.Text>
-    }
+         <Flex justify="space-between" align="center" wrap="wrap">
+      <Breadcrumb
+        separator={<RightOutlined />}
+        items={[
+          { title: <Link to={"/"}>Dashboard</Link> },
+          { title: "Products" },
+        ]}
+      />
+      <Space>
+        {isFetching && (
+          <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} />
+        )}
+        {isError && (
+          <Typography.Text type="danger">{error.message}</Typography.Text>
+        )}
+      </Space>
     </Flex>
     <Form form={filterForm} onFieldsChange={onFilterChange} initialValues={{ isPublish: false }}>
       <ProductsFilter>
@@ -270,29 +266,21 @@ const Products = () => {
           </Button>
     </ProductsFilter>
     </Form>
-     <Table 
-    columns={[...columns,
-      {
-    title: "Actions",
-    render: (_,record: Product) => {
-      return(
-        <Space>
-          <Button
-          onClick={() => {
-            setCurrentProduct(record) 
-            setDrawerOpen(true)
-          }}
-          type="link"
-          >
-            Edit
-          </Button>
-        </Space>
-      )
-    }
-  }
-    ]} 
-    dataSource={products?.data} 
-    rowKey={"_id"} 
+     <Table
+    columns={columns}
+    dataSource={products?.data}
+    rowKey={"_id"}
+    size={isMobile ? "small" : "middle"}
+    expandable={isMobile ? {
+      expandedRowRender: (record: Product) => (
+        <Descriptions size="small" column={1} bordered>
+          <Descriptions.Item label="Image"><Image width={80} src={record.image} /></Descriptions.Item>
+          <Descriptions.Item label="Description">{record.description}</Descriptions.Item>
+          <Descriptions.Item label="CreatedAt">{format(new Date(record.createdAt), "dd/MM/yyyy hh:mm a")}</Descriptions.Item>
+        </Descriptions>
+      ),
+      rowExpandable: () => true,
+    } : undefined}
     pagination={{
       total: products?.total,
       pageSize: queryParams.limit,
@@ -313,7 +301,7 @@ const Products = () => {
       <Drawer
     title= {selectedProduct ? "Edit Product" : "Add Product"}
     styles={{body: {background: colorBgLayout}}}
-    size={720} 
+    width={Math.min(720, window.innerWidth - 48)} 
     destroyOnHidden={true}
     open={drawerOpen}
     onClose={()=>{

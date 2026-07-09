@@ -28,9 +28,9 @@ const UserForm = ({isEditMode = false}:{isEditMode: boolean}) => {
             variant="borderless"
             >
                 <Row
-                gutter={20}
+                gutter={[20, 12]}
                 >
-                    <Col span={12}>
+                    <Col xs={24} sm={12}>
                 <Form.Item
                     rules={[
                         {
@@ -44,7 +44,7 @@ const UserForm = ({isEditMode = false}:{isEditMode: boolean}) => {
                 <Input placeholder="John" size="large" />
                 </Form.Item>
                     </Col>
-                                       <Col span={12}>
+                    <Col xs={24} sm={12}>
                         <Form.Item
                 label = "Last name"
                 name = "lastName"
@@ -58,7 +58,7 @@ const UserForm = ({isEditMode = false}:{isEditMode: boolean}) => {
                 <Input placeholder="Doe" size="large" />
                 </Form.Item>
                     </Col>
-                    <Col span={12}>
+                    <Col xs={24} sm={12}>
                         <Form.Item
                 label = "Email"
                 name = "email"
@@ -83,10 +83,8 @@ const UserForm = ({isEditMode = false}:{isEditMode: boolean}) => {
             title="Security info"
             variant="borderless"
             >
-                <Row
-                gutter={20}
-                >
-                    <Col span={12}>
+                <Row gutter={[20, 12]}>
+                    <Col xs={24} sm={12}>
                 <Form.Item
                 label = "Password"
                 name = "password"
@@ -108,10 +106,8 @@ const UserForm = ({isEditMode = false}:{isEditMode: boolean}) => {
             title="Role "
             variant="borderless"
             >
-                <Row
-                gutter={20}
-                >
-                <Col span={12}>
+                <Row gutter={[20, 12]}>
+                <Col xs={24} sm={12}>
                 <Form.Item
                 label = "Role"
                 name = "role"
@@ -145,7 +141,7 @@ const UserForm = ({isEditMode = false}:{isEditMode: boolean}) => {
                 </Col>
                 {
                     selectedRole === "manager" &&  (
-                         <Col span={12}>
+                         <Col xs={24} sm={12}>
                 <Form.Item
                 label = "Restaurant"
                 name = "tenantId"

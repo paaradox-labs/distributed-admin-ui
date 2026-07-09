@@ -3,7 +3,7 @@ import { LoadingOutlined, PlusOutlined, RightOutlined } from "@ant-design/icons"
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { Link, Navigate } from "react-router-dom"
 import { createUser, getUsers, updateUser } from "../../http/api"
-import { Breadcrumb, Button, Drawer, Flex, Form, Space, Spin, Table, theme, Typography } from "antd"
+import { Breadcrumb, Button, Descriptions, Drawer, Flex, Form, Grid, Space, Spin, Table, theme, Typography } from "antd"
 import type { CreateUserData, FieldData, User } from "../../types/types"
 import { useAuthStore } from "../../store"
 import UsersFilter from "./UsersFilter"
@@ -11,44 +11,6 @@ import { useEffect, useMemo, useState } from "react"
 import UserForm from "./forms/UserForm"
 import { PER_PAGE } from "../../constants"
 import { debounce } from "lodash"
-
-const columns = [
-  {
-    title: "ID",
-    dataIndex: "id",
-    key: "id",
-  },
-  {
-    title: "Name",
-    dataIndex: "firstName",
-    key: "firstName",
-    render: (_text:string, record: User ) => {
-        return(
-            <div>
-              {record.firstName} {record.lastName}
-            </div>
-        )
-    }
-  },
-  {
-    title: "Email",
-    dataIndex: "email",
-    key: "email"
-  },{
-    title: "Role",
-    dataIndex: "role",
-    key: "role" 
-  },{
-    title: "Restaurant",
-    dataIndex: "tenant",
-    key: "tenant",
-    render: (_text: string, record: User) => {
-      return <span>
-        {record?.tenant?.name || "-"} 
-      </span>
-    }
-  }
-]
 
 const Users = () => {
 
@@ -60,6 +22,8 @@ const Users = () => {
   const queryClient = useQueryClient()
 
   const { token: {colorBgLayout} } = theme.useToken()
+  const screens = Grid.useBreakpoint()
+  const isMobile = !screens.md
 
   const [queryParams, setQueryParams] = useState({
     perPage: PER_PAGE,
@@ -67,13 +31,6 @@ const Users = () => {
   })
 
   const [drawerOpen, setDrawerOper] = useState(false)
-
-  // useEffect(() => {
-  //   if (currentEditingUser) {
-  //     form.setFieldsValue(currentEditingUser)
-  //     setDrawerOper(true)
-  //   }
-  // },[currentEditingUser])
 
   const { data: users, isFetching, isError, error } = useQuery({
     queryKey: ["users", queryParams],
@@ -155,6 +112,57 @@ const Users = () => {
     return <Navigate to={`/`} replace={true} />
   }
 
+  const columns = [
+    ...(isMobile ? [] : [{
+      title: "ID",
+      dataIndex: "id",
+      key: "id",
+    }]),
+    {
+      title: "Name",
+      dataIndex: "firstName",
+      key: "firstName",
+      render: (_text:string, record: User ) => {
+          return <div>{record.firstName} {record.lastName}</div>
+      }
+    },
+    ...(isMobile ? [] : [{
+      title: "Email",
+      dataIndex: "email",
+      key: "email"
+    }]),
+    {
+      title: "Role",
+      dataIndex: "role",
+      key: "role"
+    },
+    ...(isMobile ? [] : [{
+      title: "Restaurant",
+      dataIndex: "tenant",
+      key: "tenant",
+      render: (_text: string, record: User) => {
+        return <span>{record?.tenant?.name || "-"}</span>
+      }
+    }]),
+    {
+      title: "Actions",
+      render: (_text: string, record: User) => {
+        return(
+          <Button
+            onClick={() => {
+              setCurrentEditingUser(record)
+              form.setFieldsValue({...record, tenantId: record.tenant?.id })
+              setDrawerOper(true)
+            }}
+            type="link"
+          >
+            Edit
+          </Button>
+        )
+      }
+    }
+  ]
+
   return (
   <>
   <Space
@@ -163,32 +171,22 @@ const Users = () => {
   size={`large`}
   >
 
-    <Flex
-    justify="space-between"
-    >
-      <Breadcrumb 
-    separator = {<RightOutlined />}
-    items={[
-      {
-        title: <Link to={"/"}>Dashboard</Link>
-      },{
-        title: "Users"
-      }
-    ]}
-    />
-    {
-      isFetching && ( <Spin 
-      indicator={<LoadingOutlined 
-        style={{fontSize: 24}}
-        spin
-      />}
-      /> )
-    }
-    {
-      isError && <Typography.Text type="danger">
-        {error.message}  
-      </Typography.Text>
-    }
+    <Flex justify="space-between" align="center" wrap="wrap">
+      <Breadcrumb
+        separator={<RightOutlined />}
+        items={[
+          { title: <Link to={"/"}>Dashboard</Link> },
+          { title: "Users" },
+        ]}
+      />
+      <Space>
+        {isFetching && (
+          <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} />
+        )}
+        {isError && (
+          <Typography.Text type="danger">{error.message}</Typography.Text>
+        )}
+      </Space>
     </Flex>
 
     <Form form={filterForm} onFieldsChange={onFilterChange}>
@@ -203,30 +201,20 @@ const Users = () => {
     </UsersFilter>
     </Form>
     
-    <Table 
-    columns={[...columns,
-      {
-    title: "Actions",
-    render: (_text: string, record: User) => {
-      return(
-        <Space>
-          <Button
-          onClick={() => {
-            setCurrentEditingUser(record)
-            form.setFieldsValue({...record, tenantId: record.tenant?.id })
-            setDrawerOper(true)
-          }}
-          type="link"
-          >
-            Edit
-          </Button>
-        </Space>
-      )
-    }
-  }
-    ]} 
-    dataSource={users?.data} 
-    rowKey={"id"} 
+    <Table
+    columns={columns}
+    dataSource={users?.data}
+    rowKey={"id"}
+    expandable={isMobile ? {
+      expandedRowRender: (record: User) => (
+        <Descriptions size="small" column={1} bordered>
+          <Descriptions.Item label="ID">{record.id}</Descriptions.Item>
+          <Descriptions.Item label="Email">{record.email}</Descriptions.Item>
+          <Descriptions.Item label="Restaurant">{record?.tenant?.name || "-"}</Descriptions.Item>
+        </Descriptions>
+      ),
+      rowExpandable: () => true,
+    } : undefined}
     pagination={{
       total: users?.total,
       pageSize: queryParams.perPage,
@@ -248,7 +236,7 @@ const Users = () => {
     <Drawer
     title= {currentEditingUser ? "Edit User" : "Add User"}
     styles={{body: {background: colorBgLayout}}}
-    size={720} 
+    width={Math.min(720, window.innerWidth - 48)}
     destroyOnHidden={true}
     open={drawerOpen}
     onClose={()=>{

@@ -18,8 +18,8 @@ const PromoForm = () => {
         <Row>
             <Col span={24}>
                 <Card title="Coupon info" variant="borderless">
-                    <Row gutter={20}>
-                        <Col span={12}>
+                    <Row gutter={[20, 12]}>
+                        <Col xs={24} sm={12}>
                             <Form.Item
                                 label="Title"
                                 name="title"
@@ -28,7 +28,7 @@ const PromoForm = () => {
                                 <Input placeholder="Summer Sale" size="large" />
                             </Form.Item>
                         </Col>
-                        <Col span={12}>
+                        <Col xs={24} sm={12}>
                             <Form.Item
                                 label="Code"
                                 name="code"
@@ -37,7 +37,7 @@ const PromoForm = () => {
                                 <Input placeholder="SUMMER20" size="large" />
                             </Form.Item>
                         </Col>
-                        <Col span={12}>
+                        <Col xs={24} sm={12}>
                             <Form.Item
                                 label="Discount (%)"
                                 name="discount"
@@ -53,7 +53,7 @@ const PromoForm = () => {
                                 />
                             </Form.Item>
                         </Col>
-                        <Col span={12}>
+                        <Col xs={24} sm={12}>
                             <Form.Item
                                 label="Valid Upto"
                                 name="validUpto"
@@ -69,7 +69,7 @@ const PromoForm = () => {
                             </Form.Item>
                         </Col>
                         {user?.role !== "manager" && (
-                            <Col span={12}>
+                            <Col xs={24} sm={12}>
                                 <Form.Item
                                     label="Restaurant"
                                     name="tenantId"
