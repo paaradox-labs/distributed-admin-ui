@@ -5,6 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import { getOrders } from '../../http/api';
 import { format } from 'date-fns';
 import type { Order } from '../../types/types';
+import { colorMapping } from '../../constants';
 
 // todo: make this dynamic.
 const TENANT_ID = 10;
@@ -63,7 +64,7 @@ const Orders = () => {
                       key: 'orderStatus',
                       render: (_: boolean, record: Order) => {
                           return (
-                              <Tag variant="outlined" color="green" style={{ whiteSpace: 'nowrap' }}>
+                              <Tag variant="outlined" color={colorMapping[record.orderStatus]} style={{ whiteSpace: 'nowrap' }}>
                                   {record.orderStatus.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())}
                               </Tag>
                           );
@@ -149,7 +150,7 @@ const Orders = () => {
                                           {record.paymentMode}
                                       </Descriptions.Item>
                                       <Descriptions.Item label="Status">
-                                          <Tag variant="outlined" color="green" style={{ whiteSpace: 'nowrap' }}>
+                                          <Tag variant="outlined" color={colorMapping[record.orderStatus]} style={{ whiteSpace: 'nowrap' }}>
                                               {record.orderStatus.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())}
                                           </Tag>
                                       </Descriptions.Item>
