@@ -84,3 +84,22 @@ export type ImageField = { file: File }
 export type CreateProductData = Product & {
     image: ImageField
 }
+
+export type Coupon = {
+    _id: string
+    title: string
+    code: string
+    validUpto: string
+    discount: number
+    tenantId: number
+    createdAt: string
+    updatedAt: string
+}
+
+export type CreateCouponData = {
+    title: string
+    code: string
+    validUpto: string
+    discount: number
+    tenantId: number
+}

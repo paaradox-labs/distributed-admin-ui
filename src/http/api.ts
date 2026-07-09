@@ -1,9 +1,10 @@
 // Auth Service
-import type { CreateTenantData, CreateUserData, Credential } from "../types/types";
+import type { CreateCouponData, CreateTenantData, CreateUserData, Credential } from "../types/types";
 import { api } from "./client";
 
 export const AUTH_SERVICE = "/api/auth";
 const CATALOG_SERVICE = "/api/catalog"
+const ORDER_SERVICE = "/api/order"
 
 // Auth service
 export const login = (credentials: Credential) => api.post(`${AUTH_SERVICE}/auth/login`, credentials);
@@ -31,3 +32,7 @@ export const updateProduct = (product: FormData, id: string) => {
     }
 })
 }
+
+// Order Service
+export const getCoupons = (queryString: string) => api.get(`${ORDER_SERVICE}/coupons?${queryString}`);
+export const createCoupon = (data: CreateCouponData) => api.post(`${ORDER_SERVICE}/coupons`, data);

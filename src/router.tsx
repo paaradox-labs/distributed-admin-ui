@@ -7,6 +7,7 @@ import Users from "./pages/users/Users.js";
 import Tenants from "./pages/tenants/Tenants.js";
 import LoginPage from "./pages/login/login.js";
 import Products from "./pages/products/Products.js";
+import Promos from "./pages/promos/Promos.js";
 
 export const router = createBrowserRouter([
   {
@@ -33,6 +34,10 @@ export const router = createBrowserRouter([
           {
             path: "/products",
             element: <Products />
+          },
+          {
+            path: "/promos",
+            element: <Promos />
           }
         ],
       },
