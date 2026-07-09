@@ -1,5 +1,5 @@
 // Auth Service
-import type { CreateCouponData, CreateTenantData, CreateUserData, Credential } from "../types/types";
+import type { CreateCouponData, CreateTenantData, CreateUserData, Credential, OrderStatus } from "../types/types";
 import { api } from "./client";
 
 export const AUTH_SERVICE = "/api/auth";
@@ -38,3 +38,4 @@ export const getCoupons = (queryString: string) => api.get(`${ORDER_SERVICE}/cou
 export const createCoupon = (data: CreateCouponData) => api.post(`${ORDER_SERVICE}/coupons`, data);
 export const getOrders = (queryString: string) => api.get(`${ORDER_SERVICE}/orders?${queryString}`);
 export const getSingleOrder = (orderId: string, queryString: string) => api.get(`${ORDER_SERVICE}/orders/${orderId}?${queryString}`)
+export const changeStatus = (orderId: string, data: { status: OrderStatus }) => api.patch(`${ORDER_SERVICE}/orders/change-status/${orderId}`,data);
