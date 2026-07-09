@@ -1,4 +1,4 @@
-import { Avatar, Breadcrumb, Card, Col, Flex, List, Row, Select, Space, Tag, Typography } from 'antd';
+import { Avatar, Breadcrumb, Card, Col, Flex, Grid, List, Row, Select, Space, Tag, Typography } from 'antd';
 import { RightOutlined } from '@ant-design/icons';
 import { Link, useParams } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -31,6 +31,9 @@ const orderStatusOptions = [
 ];
 
 const SingleOrder = () => {
+
+    const screens = Grid.useBreakpoint();
+    const isMobile = !screens.md;
 
     const params = useParams()
     const orderId = params.orderId; 
@@ -67,18 +70,18 @@ const SingleOrder = () => {
 
     return (
         <Space orientation="vertical" size="large" style={{ width: '100%' }}>
-            <Flex justify="space-between">
+            <Flex justify="space-between" wrap="wrap" gap={12}>
                 <Breadcrumb
                     separator={<RightOutlined />}
                     items={[
                         { title: <Link to="/">Dashboard</Link> },
                         { title: <Link to="/orders">Orders</Link> },
-                        { title: `Order ${order._id}` },
+                        { title: <Space size={4}><Typography.Text type="secondary">Order ID:</Typography.Text><Typography.Text copyable={{ text: order._id }}>{order._id}</Typography.Text></Space> },
                     ]}
                 />
 
-                 <Space>
-                    <Typography.Text>Change Order Status</Typography.Text>
+<Space wrap>
+                     <Typography.Text>Change Order Status</Typography.Text>
                     <Select
                         defaultValue={order.orderStatus}
                         style={{
@@ -90,15 +93,14 @@ const SingleOrder = () => {
                 </Space>
             </Flex>
 
-            <Row gutter={24}>
-                <Col span={14}>
+            <Row gutter={[24, 24]}>
+                <Col xs={24} lg={14}>
                     <Card
                         title="Order Details"
                         extra={
                             <Tag
                                 variant="filled"
                                 color={colorMapping[order.orderStatus] ?? 'processing'}>
-                                {/* have to do this or else would lose colour mapping in typography */}
                                 {order.orderStatus.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())} 
                             </Tag>
                         }>
@@ -115,7 +117,7 @@ const SingleOrder = () => {
                                             .join(', ')}
                                     />
 
-                                    <Space size={'large'}>
+                                    <Flex vertical={isMobile} align={isMobile ? 'flex-start' : 'center'} gap={8}>
                                         <Typography.Text>
                                             {Object.values(
                                                 item.chosenConfiguration.priceConfiguration
@@ -125,13 +127,13 @@ const SingleOrder = () => {
                                         <Typography.Text>
                                             {item.qty} Item{item.qty > 1 ? 's' : ''}
                                         </Typography.Text>
-                                    </Space>
+                                    </Flex>
                                 </List.Item>
                             )}
                         />
                     </Card>
                 </Col>
-                <Col span={10}>
+                <Col xs={24} lg={10}>
                    <Card title="Customer Details">
                         <Space orientation="vertical">
                             <Flex style={{ flexDirection: 'column' }}>
@@ -153,8 +155,8 @@ const SingleOrder = () => {
 
                             <Flex style={{ flexDirection: 'column' }}>
                                 <Typography.Text type="secondary">Payment Status</Typography.Text>
-                                <Typography.Text>
-                                    {(order.paymentStatus)}
+<Typography.Text style={{ textTransform: 'capitalize' }}>
+                                        {(order.paymentStatus)}
                                 </Typography.Text>
                             </Flex>
 
