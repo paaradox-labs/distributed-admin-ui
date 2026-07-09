@@ -5,6 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import type { Order } from '../../types/types';
 import { getSingleOrder } from '../../http/api';
 import { colorMapping } from '../../constants';
+import { format } from 'date-fns';
 
 const SingleOrder = () => {
 
@@ -15,7 +16,7 @@ const SingleOrder = () => {
         queryKey: ["order", orderId],
         queryFn: () => {
             const queryString = new URLSearchParams({
-                fields: "cart,address,paymentMode,tenantId,total,comment,orderStatus,paymentStatus",
+                fields: "cart,address,paymentMode,tenantId,total,comment,orderStatus,paymentStatus,createdAt",
             }).toString();
             return getSingleOrder(orderId as string, queryString).then(res => res.data)
         }
@@ -46,7 +47,8 @@ const SingleOrder = () => {
                             <Tag
                                 variant="filled"
                                 color={colorMapping[order.orderStatus] ?? 'processing'}>
-                                {(order.orderStatus)}
+                                {/* have to do this or else would lose colour mapping in typography */}
+                                {order.orderStatus.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())} 
                             </Tag>
                         }>
                         <List
@@ -79,7 +81,52 @@ const SingleOrder = () => {
                     </Card>
                 </Col>
                 <Col span={10}>
-                    <Card title="Customer Details">some content goes here...</Card>
+                   <Card title="Customer Details">
+                        <Space orientation="vertical">
+                            <Flex style={{ flexDirection: 'column' }}>
+                                <Typography.Text type="secondary">Name</Typography.Text>
+                                <Typography.Text>
+                                    {order.customerId.firstName + ' ' + order.customerId.lastName}
+                                </Typography.Text>
+                            </Flex>
+
+                            <Flex style={{ flexDirection: 'column' }}>
+                                <Typography.Text type="secondary">Address</Typography.Text>
+                                <Typography.Text>{order.address}</Typography.Text>
+                            </Flex>
+
+                            <Flex style={{ flexDirection: 'column' }}>
+                                <Typography.Text type="secondary">Payment Method</Typography.Text>
+                                <Typography.Text style={{ textTransform: 'capitalize' }}>{order.paymentMode}</Typography.Text>
+                            </Flex>
+
+                            <Flex style={{ flexDirection: 'column' }}>
+                                <Typography.Text type="secondary">Payment Status</Typography.Text>
+                                <Typography.Text>
+                                    {(order.paymentStatus)}
+                                </Typography.Text>
+                            </Flex>
+
+                            <Flex style={{ flexDirection: 'column' }}>
+                                <Typography.Text type="secondary">Order Amount</Typography.Text>
+                                <Typography.Text>₹{order.total}</Typography.Text>
+                            </Flex>
+
+                            <Flex style={{ flexDirection: 'column' }}>
+                                <Typography.Text type="secondary">Order Time</Typography.Text>
+                                <Typography.Text>
+                                    {format(new Date(order.createdAt), 'dd/MM/yyyy HH:mm')}
+                                </Typography.Text>
+                            </Flex>
+
+                            {order.comment && (
+                                <Flex style={{ flexDirection: 'column' }}>
+                                    <Typography.Text type="secondary">Comment</Typography.Text>
+                                    <Typography.Text>{order.comment}</Typography.Text>
+                                </Flex>
+                            )}
+                        </Space>
+                    </Card>
                 </Col>
             </Row>
             
