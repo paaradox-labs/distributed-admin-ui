@@ -26,6 +26,11 @@ const getMenuItems = (role: string) => {
         icon: <Icon component={BasketIcon} />,
         label: <NavLink to="/products">Products</NavLink>,
     },
+     {
+            key: '/orders',
+            icon: <Icon component={BasketIcon} />,
+            label: <NavLink to="/orders">Orders</NavLink>,
+        },
     {
         key: '/promos',
         icon: <Icon component={GiftIcon} />,

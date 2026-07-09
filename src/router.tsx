@@ -8,6 +8,7 @@ import Tenants from "./pages/tenants/Tenants.js";
 import LoginPage from "./pages/login/login.js";
 import Products from "./pages/products/Products.js";
 import Promos from "./pages/promos/Promos.js";
+import Orders from "./pages/orders/Orders.js";
 
 export const router = createBrowserRouter([
   {
@@ -34,6 +35,10 @@ export const router = createBrowserRouter([
           {
             path: "/products",
             element: <Products />
+          },
+          {
+            path: "/orders",
+            element: <Orders />
           },
           {
             path: "/promos",
