@@ -39,6 +39,7 @@ This is a multi-tenant restaurant management admin dashboard built as part of a 
 | lodash | ^4.18.1 | Utility Functions |
 | Vitest | ^4.1.4 | Testing Framework |
 | ESLint | ^10.0.1 | Code Linting |
+| pnpm | — | Package Manager |
 
 ## Features
 
@@ -51,6 +52,10 @@ This is a multi-tenant restaurant management admin dashboard built as part of a 
 - **User Management** - CRUD for users with role & tenant assignment (admin only)
 - **Product Management** - CRUD with dynamic forms driven by per-category pricing & attribute schemas
 - **Product Image Upload** - JPG/PNG upload with client-side validation
+- **Order Management** - Order listing with mobile-responsive table, status change via dropdown, expandable row details
+- **Order Detail View** - Single order view with cart items, customer info, and inline status management
+- **Promo Management** - CRUD for discount coupons with tenant association
+- **Mobile Responsive** - All data tables use `Grid.useBreakpoint()` to hide columns and show expandable details on small screens
 - **Dashboard Analytics** - Order statistics, sales figures, recent orders list, placeholder chart
 - **Filter & Pagination** - Search, dropdown filters, role/category/restaurant toggles across all tables
 - **Dynamic Forms** - Pricing and attribute fields render based on selected category's configuration
@@ -80,7 +85,7 @@ admin-dashboard/
 │   ├── hooks/
 │   │   └── usePermission.ts           # Role-based permission hook
 │   ├── http/
-│   │   ├── api.ts                     # API endpoint functions (auth, users, tenants, categories, products)
+│   │   ├── api.ts                     # API endpoint functions (auth, users, tenants, categories, products, orders, promos)
 │   │   └── client.ts                  # Axios instance with token refresh interceptor
 │   ├── layouts/
 │   │   ├── Dashboard.tsx              # Authenticated layout: sidebar, header, role-based menu, logout
@@ -99,18 +104,26 @@ admin-dashboard/
 │   │   │   ├── Tenants.tsx            # Restaurant CRUD: paginated table, drawer forms
 │   │   │   ├── TenantFilter.tsx       # Tenant filter bar (search)
 │   │   │   └── forms/TenantForm.tsx   # Tenant creation form (name, address)
-│   │   └── products/
-│   │       ├── Products.tsx           # Product CRUD: table, filters, drawer forms
-│   │       ├── ProductsFilter.tsx     # Product filter bar (search, category, restaurant, published)
-│   │       ├── forms/
-│   │       │   ├── ProductForm.tsx    # Main product form with dynamic sections
-│   │       │   ├── ProductImage.tsx   # Image upload with JPG/PNG validation
-│   │       │   ├── Pricing.tsx        # Dynamic pricing fields from category schema
-│   │       │   └── Attributes.tsx     # Dynamic attribute fields from category schema
-│   │       └── helpers.ts             # FormData builder for product creation
+│   │   ├── products/
+│   │   │   ├── Products.tsx           # Product CRUD: table, filters, drawer forms
+│   │   │   ├── ProductsFilter.tsx     # Product filter bar (search, category, restaurant, published)
+│   │   │   ├── forms/
+│   │   │   │   ├── ProductForm.tsx    # Main product form with dynamic sections
+│   │   │   │   ├── ProductImage.tsx   # Image upload with JPG/PNG validation
+│   │   │   │   ├── Pricing.tsx        # Dynamic pricing fields from category schema
+│   │   │   │   └── Attributes.tsx     # Dynamic attribute fields from category schema
+│   │   │   └── helpers.ts             # FormData builder for product creation
+│   │   ├── orders/
+│   │   │   ├── Orders.tsx             # Order listing: mobile-responsive table, expandable rows, status tags
+│   │   │   └── SingleOrder.tsx        # Order detail: cart items list, customer card, inline status change
+│   │   └── promos/
+│   │       ├── Promos.tsx             # Coupon CRUD: paginated table, drawer forms
+│   │       ├── PromosFilter.tsx       # Promo filter bar (search)
+│   │       └── forms/
+│   │           └── PromoForm.tsx      # Coupon creation/edit form
 │   ├── types/
-│   │   └── types.ts                   # TypeScript interfaces (User, Tenant, Product, Category, etc.)
-│   ├── constants.ts                   # Pagination constant (PER_PAGE = 6)
+│   │   └── types.ts                   # TypeScript types (User, Tenant, Product, Category, Order, Coupon, etc.)
+│   ├── constants.ts                   # Pagination and color mapping constants
 │   ├── store.ts                       # Zustand auth store (user state, setUser, logout)
 │   ├── router.tsx                     # Application routing with nested layouts
 │   ├── main.tsx                       # Entry point: QueryClient, ConfigProvider, RouterProvider
@@ -137,6 +150,9 @@ admin-dashboard/
 | `/users` | Root > Dashboard | Users | Yes | Admin only | User management |
 | `/restaurants` | Root > Dashboard | Tenants | Yes | Admin only | Restaurant tenant management |
 | `/products` | Root > Dashboard | Products | Yes | None | Product management |
+| `/orders` | Root > Dashboard | Orders | Yes | None | Order listing with status tags |
+| `/orders/:orderId` | Root > Dashboard | SingleOrder | Yes | None | Order detail view with inline status change |
+| `/promos` | Root > Dashboard | Promos | Yes | Admin only | Discount coupon management |
 | `/auth/login` | Root > NonAuth | LoginPage | No | None | User authentication page |
 
 ### Route Hierarchy
@@ -148,11 +164,14 @@ admin-dashboard/
     <Users />                             # At path "/users"
     <Tenants />                           # At path "/restaurants"
     <Products />                          # At path "/products"
+    <Orders />                            # At path "/orders"
+    <SingleOrder />                       # At path "/orders/:orderId"
+    <Promos />                            # At path "/promos"
   <NonAuth />                             # Redirects to "/" if user !== null
     <LoginPage />                         # At path "/auth/login"
 ```
 
-The sidebar menu adapts based on the user's role — `manager` users only see Home and Products.
+The sidebar menu adapts based on the user's role — `manager` users only see Dashboard, Orders, and Products.
 
 ## Authentication Flow
 
