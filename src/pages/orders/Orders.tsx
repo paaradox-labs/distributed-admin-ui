@@ -6,11 +6,36 @@ import { getOrders } from '../../http/api';
 import { format } from 'date-fns';
 import type { Order } from '../../types/types';
 import { colorMapping } from '../../constants';
+import { useEffect } from 'react';
+import socket from '../../lib/socket';
+import { useAuthStore } from '../../store';
 
 // todo: make this dynamic.
 const TENANT_ID = 10;
 
 const Orders = () => {
+
+    const {user} = useAuthStore()
+    useEffect(() => {
+        if(user?.tenant){
+            socket.on("order-update", (data) => {
+                console.log(`Data received: ${data}`);
+                
+            })
+            socket.on("join",(data) => {
+                console.log("User joined in:", data.roomId);
+            })
+            socket.emit("join", {
+            tenantId: user.tenant.id
+            } )
+    }      
+    
+    return () => {
+        socket.off("join")
+        socket.off("order-update")
+    }
+},[user?.tenant])
+
     const screens = Grid.useBreakpoint();
     const isMobile = !screens.md;
 
