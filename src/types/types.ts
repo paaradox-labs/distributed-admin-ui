@@ -163,3 +163,8 @@ export type CreateCouponData = {
     tenantId: number
 }
 
+export enum OrderEvents {
+  ORDER_CREATE = "ORDER_CREATE",
+  PAYMENT_STATUS_UPDATE = "PAYMENT_STATUS_UPDATE",
+  ORDER_STATUS_UPDATE = "ORDER_STATUS_UPDATE",
+}
