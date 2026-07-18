@@ -1,6 +1,6 @@
 ARG NODE_VERSION=24.18.0
 
-FROM node:${NODE_VERSION}-alpine as builder
+FROM node:${NODE_VERSION}-alpine AS builder
 
 WORKDIR /home/node/app
 
@@ -14,7 +14,7 @@ COPY . .
 RUN corepack enable pnpm && pnpm run build
 
 
-FROM nginx:alpine as runner
+FROM nginx:alpine AS runner
 
 COPY --from=builder --chown=nginx:nginx /home/node/app/dist /usr/share/nginx/html
 
