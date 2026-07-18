@@ -215,7 +215,7 @@ const Products = () => {
       }]),
       {
         title: "Actions",
-        render: (_,record: Product) => {
+        render: (_: unknown, record: Product) => {
           return(
             <Button
               onClick={() => {

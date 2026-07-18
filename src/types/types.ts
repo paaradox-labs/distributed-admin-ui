@@ -84,24 +84,30 @@ export type CreateProductData = Product & {
     image: ImageField
 }
 
-export enum OrderStatus {
-    RECEIVED = 'received',
-    CONFIRMED = 'confirmed',
-    PREPARED = 'prepared',
-    OUT_FOR_DELIVERY = 'out_for_delivery',
-    DELIVERED = 'delivered',
-}
+export const OrderStatus = {
+    RECEIVED: 'received',
+    CONFIRMED: 'confirmed',
+    PREPARED: 'prepared',
+    OUT_FOR_DELIVERY: 'out_for_delivery',
+    DELIVERED: 'delivered',
+} as const;
 
-export enum PaymentStatus {
-    PENDING = 'pending',
-    PAID = 'paid',
-    FAILED = 'failed',
-}
+export type OrderStatus = (typeof OrderStatus)[keyof typeof OrderStatus];
 
-export enum PaymentMode {
-    CARD = 'card',
-    CASH = 'cash',
-}
+export const PaymentStatus = {
+    PENDING: 'pending',
+    PAID: 'paid',
+    FAILED: 'failed',
+} as const;
+
+export type PaymentStatus = (typeof PaymentStatus)[keyof typeof PaymentStatus];
+
+export const PaymentMode = {
+    CARD: 'card',
+    CASH: 'cash',
+} as const;
+
+export type PaymentMode = (typeof PaymentMode)[keyof typeof PaymentMode];
 
 export type Topping = {
     id: string;
@@ -163,8 +169,10 @@ export type CreateCouponData = {
     tenantId: number
 }
 
-export enum OrderEvents {
-  ORDER_CREATE = "ORDER_CREATE",
-  PAYMENT_STATUS_UPDATE = "PAYMENT_STATUS_UPDATE",
-  ORDER_STATUS_UPDATE = "ORDER_STATUS_UPDATE",
-}
+export const OrderEvents = {
+  ORDER_CREATE: "ORDER_CREATE",
+  PAYMENT_STATUS_UPDATE: "PAYMENT_STATUS_UPDATE",
+  ORDER_STATUS_UPDATE: "ORDER_STATUS_UPDATE",
+} as const;
+
+export type OrderEvents = (typeof OrderEvents)[keyof typeof OrderEvents];

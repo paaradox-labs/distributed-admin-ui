@@ -27,8 +27,7 @@ const getSelf = async () => {
 };
 
 const LoginPage = () => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { data: selfData, refetch } = useQuery({
+  const { refetch } = useQuery({
     queryKey: ["self"],
     queryFn: getSelf,
     enabled: false,
