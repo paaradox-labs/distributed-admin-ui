@@ -4,6 +4,9 @@ ARG VITE_SOCKET_SERVICE_URL
 
 FROM node:${NODE_VERSION}-alpine AS builder
 
+ARG VITE_BACKEND_API_URL
+ARG VITE_SOCKET_SERVICE_URL
+
 WORKDIR /home/node/app
 
 RUN --mount=type=bind,source=package.json,target=package.json \
