@@ -1,6 +1,8 @@
 import { io } from "socket.io-client"
 
-const socket = io(import.meta.env.VITE_SOCKET_SERVICE_URL)
+const socket = io(import.meta.env.VITE_SOCKET_SERVICE_URL, {
+    path: "/api/ws/socket.io",
+})
 
 socket.on("connect", () => {
     console.log(`Connected socket: ${socket.id}`);
