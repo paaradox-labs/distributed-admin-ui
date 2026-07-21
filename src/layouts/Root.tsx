@@ -17,11 +17,16 @@ const Root = () => {
     queryKey: ["self"],
     queryFn: getSelf,
     retry: (failureCount: number, error) => {
-      if (error instanceof AxiosError && error.response?.status === 401) {
+      if (
+        error instanceof AxiosError &&
+        error.response?.status !== undefined &&
+        error.response.status >= 400
+      ) {
         return false;
       }
-      return failureCount < 3;
+      return failureCount < 2;
     },
+    retryDelay: 500,
   });
 
   useEffect(() => {

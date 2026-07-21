@@ -24,6 +24,7 @@ RUN corepack enable pnpm && pnpm run build
 
 FROM nginx:alpine AS runner
 
+COPY docker/prod/default.conf /etc/nginx/conf.d/default.conf
 COPY --from=builder --chown=nginx:nginx /home/node/app/dist /usr/share/nginx/html
 
 EXPOSE 80
