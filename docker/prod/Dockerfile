@@ -1,4 +1,6 @@
 ARG NODE_VERSION=24.18.0
+ARG VITE_BACKEND_API_URL
+ARG VITE_SOCKET_SERVICE_URL
 
 FROM node:${NODE_VERSION}-alpine AS builder
 
@@ -10,6 +12,9 @@ RUN --mount=type=bind,source=package.json,target=package.json \
     corepack enable pnpm && pnpm install --frozen-lockfile
 
 COPY . .
+
+RUN test -n "$VITE_BACKEND_API_URL" && echo "VITE_BACKEND_API_URL=$VITE_BACKEND_API_URL" > .env.production || true && \
+    test -n "$VITE_SOCKET_SERVICE_URL" && echo "VITE_SOCKET_SERVICE_URL=$VITE_SOCKET_SERVICE_URL" >> .env.production || true
 
 RUN corepack enable pnpm && pnpm run build
 
