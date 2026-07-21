@@ -10,9 +10,6 @@ import { useEffect } from 'react';
 import socket from '../../lib/socket';
 import { useAuthStore } from '../../store';
 
-// todo: make this dynamic.
-const TENANT_ID = 10;
-
 const Orders = () => {
     const queryClient = useQueryClient()
     const {user} = useAuthStore()
@@ -20,7 +17,7 @@ const Orders = () => {
     const [messageApi, contextHolder] = message.useMessage()
 
     useEffect(() => {
-        if(user?.tenant){
+        if(user?.tenant?.id){
             socket.on("order-update", (data) => {
                 // todo: data.event_type = 
                 if((data.event_type === OrderEvents.ORDER_CREATE && data.data.paymentMode === PaymentMode.CASH) || 
@@ -53,9 +50,9 @@ const Orders = () => {
     const isMobile = !screens.md;
 
     const { data: orders } = useQuery({
-        queryKey: ['orders'],
+        queryKey: ['orders', user?.tenant?.id],
         queryFn: () => {
-            const queryString = new URLSearchParams({ tenantId: String(TENANT_ID) }).toString();
+            const queryString = new URLSearchParams({ tenantId: String(user?.tenant?.id)}).toString();
             return getOrders(queryString).then((res) => res.data);
         },
     });
