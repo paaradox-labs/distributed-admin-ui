@@ -21,6 +21,18 @@ const refreshToken = async () => {
   );
 };
 
+api.interceptors.request.use(
+  (config) => {
+    if (config.method === "get") {
+      config.headers.set("Cache-Control", "no-cache, no-store, must-revalidate");
+      config.headers.set("Pragma", "no-cache");
+      config.headers.set("Expires", "0");
+    }
+    return config;
+  },
+  (error) => Promise.reject(error),
+);
+
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
