@@ -11,35 +11,40 @@ import {
 } from "antd";
 import { LockFilled, UserOutlined, LockOutlined } from "@ant-design/icons";
 import Logo from "../../components/icons/Logo";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { Credential } from "../../types/types";
-import { login, self } from "../../http/api";
+import { login, logout, self } from "../../http/api";
+import { useAuthStore, type User } from "../../store";
+import { usePermission } from "../../hooks/usePermission";
 
-const loginUser = async (credentials: Credential) => {
-  // server call logic
-  const { data } = await login(credentials);
-  return data;
-};
-
-const getSelf = async () => {
+const getSelf = async (): Promise<User> => {
   const { data } = await self();
   return data;
 };
 
 const LoginPage = () => {
-  const { refetch } = useQuery({
-    queryKey: ["self"],
-    queryFn: getSelf,
-    enabled: false,
-  });
+  const queryClient = useQueryClient();
+  const { setUser, logout: clearUser } = useAuthStore();
+  const { isAllowed } = usePermission();
 
   const { mutate, isPending, isError, error } = useMutation({
     mutationKey: ["login"],
-    mutationFn: loginUser,
-    onSuccess: async () => {
-      // getSelf
-      refetch();
-      // store in the state
+    mutationFn: async (credentials: Credential) => {
+      await login(credentials);
+      const user = await getSelf();
+
+      if (!isAllowed(user)) {
+        await logout();
+        clearUser();
+        queryClient.removeQueries({ queryKey: ["self"] });
+        throw new Error("You are not authorized to access the admin dashboard.");
+      }
+
+      return user;
+    },
+    onSuccess: (user) => {
+      queryClient.setQueryData(["self"], user);
+      setUser(user);
     },
   });
 
